@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table'
 import { MatButtonModule } from '@angular/material/button';
+import { Store } from '@ngrx/store';
+import { showDetail } from '../store/parts.actions';
 
 import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
+import DetailMode from '../../../constants/detailMode';
+import { PartDetailState } from '../store/parts.reducers';
 
 @Component({
   selector: 'app-part-table',
@@ -43,7 +47,7 @@ import PartCategory from '../types/PartCategory';
         </ng-container>
         <ng-container matColumnDef="edit">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row"><button mat-flat-button>Edit</button></td>
+          <td mat-cell *matCellDef="let row"><button mat-flat-button (click)="handleShowDetail(row)">Edit</button></td>
         </ng-container>
         <ng-container matColumnDef="delete">
           <th mat-header-cell *matHeaderCellDef></th>
@@ -57,9 +61,16 @@ import PartCategory from '../types/PartCategory';
   styleUrl: './part-table.component.css'
 })
 export class PartTableComponent {
+
+  private readonly store: Store = inject(Store)
+
   pageOfParts: Array<Part> = [
     { id: 1, name: 'Part 1', description: 'Part 1 Desc', category: PartCategory.Electronic, weight: 1.1, price: 1.11, startDate: '2000-02-01' } as Part,
     { id: 2, name: 'Part 2', description: 'Part 2 Desc', category: PartCategory.Electronic, weight: 2.1, price: 2.11, startDate: '2022-02-02' } as Part
   ]
   displayedColumns: string[] = ['name', 'description', 'category', 'weight', 'price', 'startDate', 'endDate', 'edit', 'delete']
+
+  handleShowDetail = (part: Part) => {
+    this.store.dispatch(showDetail({payload: { id: part.id, mode: DetailMode.Edit}}))
+  }
 }

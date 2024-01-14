@@ -4,7 +4,14 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideStore } from '@ngrx/store';
+import { partReducer } from './features/parts/store/parts.reducers';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideClientHydration(), provideAnimations()]
+  providers: [
+    provideRouter(routes), 
+    provideClientHydration(), 
+    provideAnimations(),
+    provideStore({parts: partReducer})
+  ]
 };

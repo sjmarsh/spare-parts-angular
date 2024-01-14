@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, importProvidersFrom } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -22,6 +22,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatSidenavModule, 
     MatToolbarModule
   ],
+  
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
