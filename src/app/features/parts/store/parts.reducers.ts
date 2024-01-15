@@ -4,7 +4,7 @@ import Part from "../types/Part";
 import PartAttribute from "../types/PartAttribute";
 import DetailMode from "../../../constants/detailMode";
 import FetchStatus from "../../../constants/fetchStatus";
-import { showDetail } from "./parts.actions";
+import { hideDetail, showDetail } from "./parts.actions";
 
 // ref: https://www.syncfusion.com/blogs/post/angular-state-management-ngrx.aspx
 
@@ -26,5 +26,6 @@ const initialState : PartDetailState = {
 };
 export const partReducer = createReducer(
     initialState,
-    on(showDetail, (state, { payload }) => ({ ...state, id: payload.id, mode: payload.mode }))
+    on(showDetail, (state, { payload }) => ({ ...state, id: payload.id, mode: payload.mode })),
+    on(hideDetail, (state) => ({...state, id: 0, mode: DetailMode.Closed}))
 )
