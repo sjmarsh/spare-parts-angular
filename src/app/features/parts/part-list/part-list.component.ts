@@ -25,16 +25,15 @@ import { hideDetail } from '../store/parts.actions';
 })
 export class PartListComponent {
   
-  constructor(public dialog: MatDialog, private store: Store<PartDetailState>) {
+  constructor(public dialog: MatDialog, private store: Store<{parts: PartDetailState}>) {
     
     
-    this.store.select(state => state)
+    this.store.select(state => state.parts)
       .subscribe(s => {
                        
         console.log(s)
-        console.log({s}.s.mode)
         
-        if (s && s.mode == "Edit") {
+        if (s && s.mode == DetailMode.Edit || s.mode == DetailMode.Add) {
           console.log('show')
           this.showDetail();
         }
