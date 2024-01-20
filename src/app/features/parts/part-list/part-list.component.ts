@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { Store } from '@ngrx/store';
@@ -23,16 +23,15 @@ import { hideDetail } from '../store/parts.actions';
   `,
   styleUrl: './part-list.component.css'
 })
-export class PartListComponent {
-  
+export class PartListComponent implements OnInit {
+
   constructor(public dialog: MatDialog, private store: Store<{parts: PartDetailState}>) {
-    
-    
+  }
+ 
+  ngOnInit(): void {
     this.store.select(state => state.parts)
-      .subscribe(s => {
-                       
+      .subscribe(s => {           
         console.log(s)
-        
         if (s && s.mode == DetailMode.Edit || s.mode == DetailMode.Add) {
           console.log('show')
           this.showDetail();
@@ -40,11 +39,8 @@ export class PartListComponent {
       })
   }
 
-  
   showDetail = () => {
-    
     const dialogRef = this.dialog.open(PartDetailComponent);
-
     dialogRef.afterClosed().subscribe(res => {
       console.log('part detail dialog closed');
       this.store.dispatch(hideDetail());
