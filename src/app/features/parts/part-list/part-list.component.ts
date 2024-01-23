@@ -17,8 +17,6 @@ import { hideDetail } from '../store/parts.actions';
     <div>
       <h3>Part List</h3>
       <app-part-table></app-part-table>
-      <button mat-raised-button (click)="showDetail()">Show Detail Test</button>
-      
     </div>
   `,
   styleUrl: './part-list.component.css'
@@ -33,7 +31,6 @@ export class PartListComponent implements OnInit {
       .subscribe(s => {           
         console.log(s)
         if (s && s.mode == DetailMode.Edit || s.mode == DetailMode.Add) {
-          console.log('show')
           this.showDetail();
         }
       })
@@ -42,7 +39,6 @@ export class PartListComponent implements OnInit {
   showDetail = () => {
     const dialogRef = this.dialog.open(PartDetailComponent);
     dialogRef.afterClosed().subscribe(res => {
-      console.log('part detail dialog closed');
       this.store.dispatch(hideDetail());
     })
   }
