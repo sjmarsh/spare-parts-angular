@@ -1,11 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
+import { fetchPart } from '../store/parts.actions';
+import { PartDetailState } from '../store/parts.reducers';
+import FetchStatus from '../../../constants/fetchStatus';
 
 @Component({
   selector: 'app-part-detail',
@@ -70,6 +74,22 @@ export class PartDetailComponent {
   })
   
   part: Part = { name: 'Part 1', description: 'The first one', category: PartCategory.Electronic, weight: 1.1, price: 1.11, startDate: '2020-01-01', endDate: '2024-10-10' } as Part
+
+  constructor(private store: Store<{parts: PartDetailState}>){
+    //this.store.dispatch(fetchPart({partId: 1}));
+  }
+
+  ngOnInit(): void {
+    //this.store.dispatch(fetchPart({partId: 1}));
+    /*
+    this.store.select(state => state.parts)
+      .subscribe(s => {
+        if(s.status === FetchStatus.Succeeded){
+          this.part = s.value
+        }
+        // todo handle idle and error status
+      })*/
+  }
 
   onSubmit = () => {
     // TODO

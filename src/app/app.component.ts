@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     RouterLink, 
     RouterLinkActive, 
     RouterOutlet, 
+    HttpClientModule,
     MatButtonModule, 
     MatIconModule, 
     MatListModule,

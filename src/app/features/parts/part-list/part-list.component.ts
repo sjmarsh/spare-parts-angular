@@ -24,16 +24,18 @@ import { hideDetail } from '../store/parts.actions';
 export class PartListComponent implements OnInit {
 
   constructor(public dialog: MatDialog, private store: Store<{parts: PartDetailState}>) {
+    this.store.select(state => state.parts)
+    .subscribe(s => {           
+      console.log('list init')
+      if (s && s.mode == DetailMode.Edit || s.mode == DetailMode.Add) {
+        //this.showDetail();
+        console.log('detail')
+      }
+    })
   }
  
   ngOnInit(): void {
-    this.store.select(state => state.parts)
-      .subscribe(s => {           
-        console.log(s)
-        if (s && s.mode == DetailMode.Edit || s.mode == DetailMode.Add) {
-          this.showDetail();
-        }
-      })
+    
   }
 
   showDetail = () => {

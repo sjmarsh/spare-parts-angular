@@ -12,7 +12,7 @@ export class PartsEffects {
     loadPart$ = createEffect(() => this.actions$.pipe(
         ofType(fetchPart),
         switchMap(({partId}) => this.partService.get(partId).pipe(
-            map(part => fetchPartSuccess({ part})),
+            map(part => fetchPartSuccess({ part })),
             catchError(() => [fetchPartFail()])
         ))
     ))
