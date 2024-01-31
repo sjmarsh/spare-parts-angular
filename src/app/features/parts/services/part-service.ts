@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import Part from "../types/Part";
+import PartCategory from "../types/PartCategory";
 
 @Injectable({
     providedIn: 'root'
@@ -25,6 +26,6 @@ export class PartService {
             }
         })*/
         console.log('service called')
-        return of({ id: partId, name: `Part ${partId}`, description: `The Part ${partId}`} as Part)
+        return of({ id: partId, name: `Part ${partId}`, description: `The Part ${partId}`, category: PartCategory.Mechanical, weight: partId, price: partId, startDate: '2023-01-01'} as Part)
     }
 }

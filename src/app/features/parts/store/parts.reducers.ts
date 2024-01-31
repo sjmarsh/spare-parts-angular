@@ -27,7 +27,7 @@ const initialState : PartDetailState = {
 
 export const partReducer = createReducer(
     initialState,
-    on(showDetail, (state, { payload }) => ({ ...state, id: payload.id, mode: payload.mode })),
+    on(showDetail, (state, { mode }) => ({ ...state, mode: mode })),
     on(hideDetail, (state) => ({...state, id: 0, mode: DetailMode.Closed})),
     on(fetchPart, (state) => ({...state, status: FetchStatus.Loading})),
     on(fetchPartSuccess, (state, { part }) => ({...state, value: part, status: FetchStatus.Succeeded})),

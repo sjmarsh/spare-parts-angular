@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -7,9 +7,8 @@ import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
-import { fetchPart } from '../store/parts.actions';
-import { PartDetailState } from '../store/parts.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
+import { PartDetailState } from '../store/parts.reducers';
 
 @Component({
   selector: 'app-part-detail',
@@ -19,7 +18,7 @@ import FetchStatus from '../../../constants/fetchStatus';
   template: `
     
       <form [formGroup]="partForm" (ngSubmit)="onSubmit()">
-        <h3>{{detailMode}}Part</h3>
+        <h3>{{detailMode}} Part</h3>
         
         <mat-form-field>
           <mat-label>Enter Name</mat-label>
@@ -57,42 +56,52 @@ import FetchStatus from '../../../constants/fetchStatus';
           <input matInput type="date" formControlName="endDate">
         </mat-form-field>
 
-      </form>
-    
+        <p>{{errorMessage}}</p>
+
+      </form>    
   `
 })
-export class PartDetailComponent {
-  detailMode: string = 'Edit'
-  partForm = new FormGroup({
-    name: new FormControl(''),
-    description: new FormControl(''),
-    category: new FormControl(PartCategory.Electronic),
-    weight: new FormControl(1.1),
-    price: new FormControl(1.11),
-    startDate: new FormControl('2020-01-01'),
-    endDate: new FormControl('2024-10-10')
-  })
-  
-  part: Part = { name: 'Part 1', description: 'The first one', category: PartCategory.Electronic, weight: 1.1, price: 1.11, startDate: '2020-01-01', endDate: '2024-10-10' } as Part
 
+export class PartDetailComponent {
+  part: Part = { name: '', description: '', category: PartCategory.Electronic, weight: 0, price: 0, startDate: '2000-01-01', endDate: null } as Part
+  partForm: FormGroup
+  detailMode: string = ''
+  errorMessage: string = ''
+  
   constructor(private store: Store<{parts: PartDetailState}>){
-    //this.store.dispatch(fetchPart({partId: 1}));
+    this.partForm = this.initForm(this.part)
   }
 
-  ngOnInit(): void {
-    //this.store.dispatch(fetchPart({partId: 1}));
-    /*
+  ngOnInit(): void {   
     this.store.select(state => state.parts)
       .subscribe(s => {
         if(s.status === FetchStatus.Succeeded){
-          this.part = s.value
+          this.part = s.value;
+          this.partForm = this.initForm(this.part);
+          this.detailMode = s.mode;
         }
-        // todo handle idle and error status
-      })*/
+        if(s.status === FetchStatus.Failed) {
+          this.errorMessage = s.error ?? 'Something went wrong while trying to fetch part';
+        }
+        
+      })
+  }
+
+  initForm = (part: Part) : FormGroup => {
+    return new FormGroup({
+      name: new FormControl(part.name),
+      description: new FormControl(part.description),
+      category: new FormControl(part.category),
+      weight: new FormControl(part.weight),
+      price: new FormControl(part.price),
+      startDate: new FormControl(part.startDate),
+      endDate: new FormControl(part.endDate)
+    })
   }
 
   onSubmit = () => {
     // TODO
+    console.log('submit');
     console.log(this.partForm.value);
   }
 }
