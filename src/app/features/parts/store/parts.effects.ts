@@ -1,8 +1,13 @@
 import { Actions, createEffect, ofType} from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import { PartService } from '../services/part-service';
-import { fetchPart, fetchPartFail, fetchPartSuccess, showDetail } from './parts.actions';
 import { switchMap, map, catchError } from 'rxjs';
+
+import { PartService } from '../services/part-service';
+import { 
+    createPart, createPartFail, createPartSuccess,
+    updatePart, updatePartSuccess, updatePartFail, 
+    fetchPart, fetchPartSuccess, fetchPartFail, 
+    showDetail } from './parts.actions';
 import DetailMode from '../../../constants/detailMode';
 
 @Injectable()
@@ -12,7 +17,7 @@ export class PartsEffects {
 
     loadPart$ = createEffect(() => this.actions$.pipe(
         ofType(fetchPart),
-        switchMap(({partId}) => this.partService.get(partId).pipe(
+        switchMap(({partId}) => this.partService.fetchPart(partId).pipe(
             map(part => fetchPartSuccess({ part })),
             catchError(() => [fetchPartFail()])
         ))
@@ -21,6 +26,22 @@ export class PartsEffects {
     loadPartSuccess$ = createEffect(() => this.actions$.pipe(
         ofType(fetchPartSuccess),
         map(() => showDetail({ mode: DetailMode.Edit}))
+    ))
+
+    createPart$ = createEffect(() => this.actions$.pipe(
+        ofType(createPart),
+        switchMap(({part}) => this.partService.createPart(part).pipe(
+            map(partResponse => createPartSuccess({partResponse})),
+            catchError((partResponse) => [createPartFail(partResponse)])
+        ))
+    ))
+
+    updatePart$ = createEffect(() => this.actions$.pipe(
+        ofType(updatePart),
+        switchMap(({part}) => this.partService.updatePart(part).pipe(
+            map(partResponse => updatePartSuccess({partResponse})),
+            catchError((partResponse) => [updatePartFail(partResponse)])
+        ))
     ))
 
 }

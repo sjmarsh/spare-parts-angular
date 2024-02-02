@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatButtonModule} from '@angular/material/button';
 import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
 import FetchStatus from '../../../constants/fetchStatus';
 import { PartDetailState } from '../store/parts.reducers';
+import DetailMode from '../../../constants/detailMode';
+import { createPart, updatePart } from '../store/parts.actions';
 
 @Component({
   selector: 'app-part-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatInputModule, MatFormFieldModule],
+  imports: [CommonModule, ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatButtonModule],
   styleUrl: './part-detail.component.css',
   template: `
     
@@ -56,8 +59,9 @@ import { PartDetailState } from '../store/parts.reducers';
           <input matInput type="date" formControlName="endDate">
         </mat-form-field>
 
-        <p>{{errorMessage}}</p>
+        <button mat-flat-button color="primary" type="submit">Submit</button>
 
+        <mat-error>{{errorMessage}}</mat-error>
       </form>    
   `
 })
@@ -88,6 +92,8 @@ export class PartDetailComponent {
   }
 
   initForm = (part: Part) : FormGroup => {
+    console.log('init Form')
+    console.log(part)
     return new FormGroup({
       name: new FormControl(part.name),
       description: new FormControl(part.description),
@@ -100,8 +106,12 @@ export class PartDetailComponent {
   }
 
   onSubmit = () => {
-    // TODO
-    console.log('submit');
-    console.log(this.partForm.value);
+    console.log(`submit mode: ${this.detailMode}`);
+    if(this.detailMode == DetailMode.Add) {
+      this.store.dispatch(createPart({part: this.partForm.value}));
+    }
+    else {
+      this.store.dispatch(updatePart({part: this.partForm.value}));
+    }
   }
 }
