@@ -14,8 +14,8 @@ import { hideDetail } from '../store/parts.actions';
   standalone: true,
   imports: [CommonModule, MatDialogModule, PartTableComponent, PartDetailComponent],
   template: `
-    <div>
-      <h3>Part List</h3>
+    <div class="part-list">
+      <h2>Part List</h2>
       <app-part-table></app-part-table>
     </div>
   `,
@@ -29,11 +29,14 @@ export class PartListComponent {
       if (s && s.mode == DetailMode.Edit || s.mode == DetailMode.Add) {
         this.showDetail();
       }
+      if (s && s.mode == DetailMode.Closed) {
+        this.dialog.closeAll();
+      }
     })
   }
  
   showDetail = () => {
-    const dialogRef = this.dialog.open(PartDetailComponent);
+    const dialogRef = this.dialog.open(PartDetailComponent, { width: '50%' });
     dialogRef.afterClosed().subscribe(res => {
       this.store.dispatch(hideDetail());
     })
