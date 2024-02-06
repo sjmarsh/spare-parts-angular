@@ -36,7 +36,7 @@ export class PartListComponent {
   }
  
   showDetail = () => {
-    const dialogRef = this.dialog.open(PartDetailComponent, { width: '50%' });
+    const dialogRef = this.dialog.open(PartDetailComponent, { height: '90%', width: '50%' });
     dialogRef.afterClosed().subscribe(res => {
       this.store.dispatch(hideDetail());
     })
