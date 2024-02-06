@@ -27,7 +27,16 @@ export class PartService {
             }
         })*/
         console.log('service called')
-        return of({ id: partId, name: `Part ${partId}`, description: `The Part ${partId}`, category: PartCategory.Mechanical, weight: partId, price: partId, startDate: '2023-01-01'} as Part)
+        return of({ 
+            id: partId, 
+            name: `Part ${partId}`, 
+            description: `The Part ${partId}`, 
+            category: PartCategory.Mechanical, 
+            weight: partId, 
+            price: partId, 
+            startDate: '2023-01-01',
+            attributes: []
+        } as Part)
     }
 
     createPart(part: Part): Observable<PartResponse> {
