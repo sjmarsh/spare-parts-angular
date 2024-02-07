@@ -113,7 +113,7 @@ export class PartDetailComponent {
   displayedColumns: string[] = ['name', 'description', 'value', 'delete']
 
   attributeArray = new FormArray<FormGroup>([])
-
+  
   constructor(private store: Store<{parts: PartDetailState}>, private formBuilder: FormBuilder){
     this.partForm = this.initForm(this.part)
   }
@@ -126,13 +126,15 @@ export class PartDetailComponent {
           this.partForm = this.initForm(this.part);
           this.detailMode = s.mode;
           if(this.part.attributes && this.part.attributes.length > 0){
+            const attrArray = this.partForm.get('attributes') as FormArray;
             this.part.attributes.forEach(attr => {
-              this.attributeArray.push(new FormGroup({
+              attrArray.push(new FormGroup({
                 name: new FormControl(attr.name),
                 description: new FormControl(attr.description),
                 value: new FormControl(attr.value)
               }));
             });
+            this.attributeArray = attrArray;
           }
         }
         if(s.status === FetchStatus.Failed) {
@@ -151,7 +153,8 @@ export class PartDetailComponent {
       weight: new FormControl(part.weight),
       price: new FormControl(part.price),
       startDate: new FormControl(part.startDate),
-      endDate: new FormControl(part.endDate)
+      endDate: new FormControl(part.endDate),
+      attributes: new FormArray<FormGroup>([])
     });
     return fg;
   }
@@ -171,11 +174,13 @@ export class PartDetailComponent {
   }
 
   addAttribute = () => {
-    this.attributeArray.push(new FormGroup({
+    const attrArray = this.partForm.get('attributes') as FormArray
+    attrArray.push(new FormGroup({
       name: new FormControl(''),
       description: new FormControl(''),
       value: new FormControl('')
     }));
+    this.attributeArray = attrArray
   }
 
   deleteAttribute = (attribute: PartAttribute) => {

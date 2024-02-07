@@ -35,7 +35,11 @@ export class PartService {
             weight: partId, 
             price: partId, 
             startDate: '2023-01-01',
-            attributes: []
+            attributes: [{
+                name: 'shape',
+                description: 'the shape of the part',
+                value: 'round'
+            }]
         } as Part)
     }
 
