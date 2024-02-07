@@ -73,39 +73,14 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
             <button mat-icon-button aria-label="Add attribute" type="button" (click)="addAttribute()">
               <mat-icon>add</mat-icon>
             </button>
-            <div *ngIf="part.attributes && part.attributes.length > 0">
-             <table mat-table [dataSource]="attributeDataSource">
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let element">
-                  <mat-form-field>
-                    <input mat-input [formControl]="element.get('name')">
-                  </mat-form-field>
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef>Description</th>
-                <td mat-cell *matCellDef="let element">
-                  <mat-form-field>
-                    <input mat-input [formControl]="element.get('description')">
-                  </mat-form-field>  
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="value">
-                <th mat-header-cell *matHeaderCellDef>Value</th>
-                <td mat-cell *matCellDef="let element">
-                  <mat-form-field>
-                    <input mat-input [formControl]="element.get('value')">
-                  </mat-form-field>
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="delete">
-                <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell *matCellDef="let row"><button mat-flat-button type="button" (click)="deleteAttribute(row)">Delete</button></td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-             </table>
+            <div *ngIf="attributeArray && attributeArray.length > 0">
+              <div *ngFor="let attr of attributeArray.controls">
+                <ng-container [formGroup]="attr">
+                  <input formControlName="name"/>
+                  <input formControlName="description"/>
+                  <input formControlName="value"/>
+                </ng-container>
+              </div>
             </div>
           </mat-card>
         </details>
@@ -118,6 +93,8 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
     </div>   
   `
 })
+
+//ref: https://netbasal.com/angular-reactive-forms-the-ultimate-guide-to-formarray-3adbe6b0b61a
 
 export class PartDetailComponent {
   part: Part = { 
@@ -135,13 +112,10 @@ export class PartDetailComponent {
   errorMessage: string = ''
   displayedColumns: string[] = ['name', 'description', 'value', 'delete']
 
-  attributeDataSource: any
+  attributeArray = new FormArray<FormGroup>([])
 
   constructor(private store: Store<{parts: PartDetailState}>, private formBuilder: FormBuilder){
     this.partForm = this.initForm(this.part)
-    if(this.partForm) {
-      this.attributeDataSource = (this.partForm.get('attributes') as FormArray).controls;
-    }
   }
 
   ngOnInit(): void {   
@@ -151,11 +125,19 @@ export class PartDetailComponent {
           this.part = {...s.value};
           this.partForm = this.initForm(this.part);
           this.detailMode = s.mode;
+          if(this.part.attributes && this.part.attributes.length > 0){
+            this.part.attributes.forEach(attr => {
+              this.attributeArray.push(new FormGroup({
+                name: new FormControl(attr.name),
+                description: new FormControl(attr.description),
+                value: new FormControl(attr.value)
+              }));
+            });
+          }
         }
         if(s.status === FetchStatus.Failed) {
           this.errorMessage = s.error ?? 'Something went wrong while trying to fetch part';
-        }
-        
+        }        
       })
   }
 
@@ -169,8 +151,7 @@ export class PartDetailComponent {
       weight: new FormControl(part.weight),
       price: new FormControl(part.price),
       startDate: new FormControl(part.startDate),
-      endDate: new FormControl(part.endDate),
-      attributes: this.formBuilder.array(part.attributes ?? [])
+      endDate: new FormControl(part.endDate)
     });
     return fg;
   }
@@ -190,20 +171,11 @@ export class PartDetailComponent {
   }
 
   addAttribute = () => {
-    this.part.attributes = [...this.part.attributes ?? [], { name: '', description: '', value: '' } as PartAttribute];
-    //this.partForm = this.initForm(this.part);
-    let attributeForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      description: [''],
-      value:['']
-    });
-    let attribArray = this.partForm.get('attributes') as FormArray;
-    attribArray.push(attributeForm);
-    
-    if(this.partForm) {
-      this.attributeDataSource = attribArray.controls;
-    }
-
+    this.attributeArray.push(new FormGroup({
+      name: new FormControl(''),
+      description: new FormControl(''),
+      value: new FormControl('')
+    }));
   }
 
   deleteAttribute = (attribute: PartAttribute) => {
