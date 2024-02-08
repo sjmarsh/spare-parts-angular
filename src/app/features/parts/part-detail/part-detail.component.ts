@@ -73,8 +73,8 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
             <button mat-icon-button aria-label="Add attribute" type="button" (click)="addAttribute()">
               <mat-icon>add</mat-icon>
             </button>
-            <div *ngIf="attributeArray && attributeArray.length > 0">
-              <div *ngFor="let attr of attributeArray.controls">
+            <div *ngIf="getAttributeFormArray().controls.length > 0">
+              <div *ngFor="let attr of getAttributeFormArray().controls">
                 <ng-container [formGroup]="attr">
                   <input formControlName="name"/>
                   <input formControlName="description"/>
@@ -111,8 +111,6 @@ export class PartDetailComponent {
   detailMode: string = ''
   errorMessage: string = ''
   displayedColumns: string[] = ['name', 'description', 'value', 'delete']
-
-  attributeArray = new FormArray<FormGroup>([])
   
   constructor(private store: Store<{parts: PartDetailState}>, private formBuilder: FormBuilder){
     this.partForm = this.initForm(this.part)
@@ -134,7 +132,6 @@ export class PartDetailComponent {
                 value: new FormControl(attr.value)
               }));
             });
-            this.attributeArray = attrArray;
           }
         }
         if(s.status === FetchStatus.Failed) {
@@ -159,6 +156,18 @@ export class PartDetailComponent {
     return fg;
   }
 
+  getAttributeFormArray = () : FormArray<FormGroup> => {
+    const defaultValue = new FormArray<FormGroup>([])
+    if(!this.partForm) {
+      return defaultValue;
+    }
+    const attribs = this.partForm.get('attributes') as FormArray
+    if(!attribs) {
+      return defaultValue;
+    }
+    return attribs;
+  }
+
   onSubmit = () => {
     console.log(`submit mode: ${this.detailMode}`);
     if(this.detailMode == DetailMode.Add) {
@@ -180,7 +189,6 @@ export class PartDetailComponent {
       description: new FormControl(''),
       value: new FormControl('')
     }));
-    this.attributeArray = attrArray
   }
 
   deleteAttribute = (attribute: PartAttribute) => {
