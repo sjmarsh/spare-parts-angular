@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -74,7 +74,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
               <mat-icon>add</mat-icon>
             </button>
             <div *ngIf="getAttributeFormArray().controls.length > 0">
-              <table mat-table [dataSource]="getAttributeFormArray().controls" >
+              <table mat-table [dataSource]="getAttributeFormArray().controls">
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Name</th>
                   <td mat-cell *matCellDef="let element">
@@ -131,6 +131,8 @@ export class PartDetailComponent {
   partForm: FormGroup
   detailMode: string = ''
   errorMessage: string = ''
+
+  @ViewChild(MatTable) table!: MatTable<any>; // ref: https://stackoverflow.com/questions/49284358/calling-renderrows-on-angular-material-table/50495353#50495353
   displayedColumns: string[] = ['name', 'description', 'value', 'delete']
   
   constructor(private store: Store<{parts: PartDetailState}>, private formBuilder: FormBuilder){
@@ -210,6 +212,7 @@ export class PartDetailComponent {
       description: new FormControl(''),
       value: new FormControl('')
     }));
+    this.table.renderRows();
   }
 
   deleteAttribute = (attribute: PartAttribute) => {
@@ -217,5 +220,6 @@ export class PartDetailComponent {
     const attrArray = this.getAttributeFormArray();
     const attrIndex = attrArray.value.findIndex(a => a === attribute);
     attrArray.removeAt(attrIndex);
+    this.table.renderRows();
   }
 }
