@@ -2,9 +2,13 @@
     margin: 12px;
 }
 
-.custom-card {
+.detail-card {
     display: flex; 
     flex-direction: column; 
     flex-wrap: wrap; 
+    margin: 3px;
+}
+
+.attributes-card {
     margin: 3px;
 }

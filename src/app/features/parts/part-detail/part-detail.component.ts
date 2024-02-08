@@ -27,7 +27,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
       <form [formGroup]="partForm" (ngSubmit)="onSubmit()">
         <h2>{{detailMode}} Part</h2>
         
-        <mat-card class="custom-card">
+        <mat-card class="detail-card">
 
           <mat-form-field>
             <mat-label>Enter Name</mat-label>
@@ -69,18 +69,39 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
 
         <details>
           <summary>Attributes</summary>
-          <mat-card>
+          <mat-card class="attributes-card">
             <button mat-icon-button aria-label="Add attribute" type="button" (click)="addAttribute()">
               <mat-icon>add</mat-icon>
             </button>
             <div *ngIf="getAttributeFormArray().controls.length > 0">
-              <div *ngFor="let attr of getAttributeFormArray().controls">
-                <ng-container [formGroup]="attr">
-                  <input formControlName="name"/>
-                  <input formControlName="description"/>
-                  <input formControlName="value"/>
+              <table mat-table [dataSource]="getAttributeFormArray().controls" >
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let element">
+                    <input [formControl]="element.get('name')">
+                  </td>
                 </ng-container>
-              </div>
+                <ng-container matColumnDef="description">
+                  <th mat-header-cell *matHeaderCellDef>Description</th>
+                  <td mat-cell *matCellDef="let element">
+                    <input [formControl]="element.get('description')">
+                  </td>
+                </ng-container> 
+                <ng-container matColumnDef="value">
+                  <th mat-header-cell *matHeaderCellDef>Value</th>
+                  <td mat-cell *matCellDef="let element">
+                    <input [formControl]="element.get('value')">
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="delete">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element">
+                    <button mat-flat-button type="button" (click)="deleteAttribute(element)">Delete</button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table> 
             </div>
           </mat-card>
         </details>
@@ -183,7 +204,7 @@ export class PartDetailComponent {
   }
 
   addAttribute = () => {
-    const attrArray = this.partForm.get('attributes') as FormArray
+    const attrArray = this.getAttributeFormArray();
     attrArray.push(new FormGroup({
       name: new FormControl(''),
       description: new FormControl(''),
@@ -193,7 +214,8 @@ export class PartDetailComponent {
 
   deleteAttribute = (attribute: PartAttribute) => {
     // todo add a confirmation message before deleting
-    this.part.attributes = this.part.attributes?.filter(a => a !== attribute);
-    this.partForm = this.initForm(this.part);
+    const attrArray = this.getAttributeFormArray();
+    const attrIndex = attrArray.value.findIndex(a => a === attribute);
+    attrArray.removeAt(attrIndex);
   }
 }
