@@ -7,7 +7,7 @@
   </mat-toolbar>
   <mat-sidenav-container autosize>
     <mat-sidenav [ngClass]="!isCollapsed ? 'expanded' : ''" [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
-      <mat-nav-list>
+      <mat-nav-list >
         <a mat-list-item>
           <span class="entry">
             <a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">
@@ -15,6 +15,16 @@
               <span *ngIf="!isCollapsed">Home</span>
             </a>
           </span>
+        </a>
+        <a mat-list-item>  
+          <span class="entry">
+            <a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
+              <mat-icon>lock_open</mat-icon>
+              <span *ngIf="!isCollapsed">Login</span>
+            </a>
+          </span>
+        </a>
+        <a mat-list-item>
           <span class="entry">
             <a routerLink="/part-list" routerLinkActive="active" ariaCurrentWhenActive="page">
               <mat-icon>list</mat-icon>

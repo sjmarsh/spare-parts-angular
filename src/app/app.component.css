@@ -39,5 +39,6 @@ mat-sidenav-content{
 }
 
 .expanded {
-  width: 250px;   
+  width: 250px;
+  height: 300px;
 }

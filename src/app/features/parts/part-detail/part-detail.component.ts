@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule, MatTable } from '@angular/material/table';
@@ -135,7 +135,7 @@ export class PartDetailComponent {
   @ViewChild(MatTable) table!: MatTable<any>; // ref: https://stackoverflow.com/questions/49284358/calling-renderrows-on-angular-material-table/50495353#50495353
   displayedColumns: string[] = ['name', 'description', 'value', 'delete']
   
-  constructor(private store: Store<{parts: PartDetailState}>, private formBuilder: FormBuilder){
+  constructor(private store: Store<{parts: PartDetailState}>){
     this.partForm = this.initForm(this.part)
   }
 
