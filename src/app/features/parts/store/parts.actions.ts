@@ -17,3 +17,7 @@ export const createPartFail = createAction('[PART] Create Part Fail', props<{par
 export const updatePart = createAction('[PART] Update Part', props<{part: Part}>())
 export const updatePartSuccess = createAction('[PART] Update Part Success', props<{partResponse: PartResponse}>())
 export const updatePartFail = createAction('[PART] Update Part Fail', props<{partResponse: PartResponse}>())
+
+export const deletePart = createAction('[PART] Delete Part', props<{partId: number}>())
+export const deletePartSuccess = createAction('[PART] Delete Part Success', props<{partResponse: PartResponse}>())
+export const deletePartFail = createAction('[PART] Delete Part Fail', props<{partResponse: PartResponse}>())

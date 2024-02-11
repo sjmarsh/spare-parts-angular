@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
-import { fetchPart } from '../store/parts.actions';
+import { deletePart, fetchPart } from '../store/parts.actions';
 
 import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
@@ -50,7 +50,7 @@ import { PartDetailState } from '../store/parts.reducers';
         </ng-container>
         <ng-container matColumnDef="delete">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row"><button mat-flat-button>Delete</button></td>
+          <td mat-cell *matCellDef="let row"><button mat-flat-button (click)="handleDelete(row)">Delete</button></td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -71,5 +71,10 @@ export class PartTableComponent {
 
   handleEdit = (part: Part) => {
     this.store.dispatch(fetchPart({partId: part.id}));
+  }
+
+  handleDelete = (part: Part) => {
+    console.log('delete')
+    this.store.dispatch(deletePart({partId: part.id}));
   }
 }

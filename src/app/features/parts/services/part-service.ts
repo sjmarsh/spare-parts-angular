@@ -64,4 +64,14 @@ export class PartService {
         return of({ value: part, hasError: false} as PartResponse);
     }
 
+    deletePart(partId: number): Observable<PartResponse> {
+        console.log(`delete part ${partId}`)
+        if(partId === 0){
+            return of({} as PartResponse);
+        }
+
+        // TODO : delete
+        return of({ message: 'deleted'} as PartResponse);
+    }
+
 }

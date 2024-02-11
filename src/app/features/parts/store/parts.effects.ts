@@ -6,6 +6,7 @@ import { PartService } from '../services/part-service';
 import { 
     createPart, createPartFail, createPartSuccess,
     updatePart, updatePartSuccess, updatePartFail, 
+    deletePart, deletePartSuccess, deletePartFail,
     fetchPart, fetchPartSuccess, fetchPartFail, 
     showDetail } from './parts.actions';
 import DetailMode from '../../../constants/detailMode';
@@ -41,6 +42,14 @@ export class PartsEffects {
         switchMap(({part}) => this.partService.updatePart(part).pipe(
             map(partResponse => updatePartSuccess({partResponse})),
             catchError((partResponse) => [updatePartFail(partResponse)])
+        ))
+    ))
+
+    deletePart$ = createEffect(() => this.actions$.pipe(
+        ofType(deletePart),
+        switchMap(({partId}) => this.partService.deletePart(partId).pipe(
+            map(partResponse => deletePartSuccess({partResponse})),
+            catchError((partResponse) => [deletePartFail(partResponse)])
         ))
     ))
 
