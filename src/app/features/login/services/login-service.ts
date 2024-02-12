@@ -15,7 +15,7 @@ export class LoginService {
     refreshUrl = `${this.baseUrl}/refresh`;
 
     login = (request: AuthenticationRequest) : Observable<AuthenticationResponse> => {
-
+        console.log('login service: login')
         // todo call api
         return of({
             userName: 'admin',
@@ -25,17 +25,4 @@ export class LoginService {
             accessToken: 'amazing token'
         } as AuthenticationResponse)
     }
-
-    logout = (): Observable<AuthenticationResponse> => {
-
-        // todo call api
-        return of({
-            userName: '',
-            displayName: "",
-            isAuthenticated: false,
-            message: 'logged out',
-            accessToken: ''
-        } as AuthenticationResponse)
-    }
- 
 }

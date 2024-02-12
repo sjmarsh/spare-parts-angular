@@ -8,6 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 
+import { login } from './store/login.actions';
+import { LoginState } from './store/login.reducers';
+import FetchStatus from '../../constants/fetchStatus';
 
 @Component({
     selector: 'apt-login',
@@ -18,7 +21,7 @@ import { Store } from '@ngrx/store';
     <div class="login">
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <h2>Login</h2>
-
+            <p>You are not logged in. Please log in below.</p>
             <mat-card class="login-card">
                 <mat-form-field>
                     <mat-label>User Name</mat-label>
@@ -42,13 +45,25 @@ export class LoginComponent {
         userName: new FormControl(''),
         password: new FormControl('')
     })
+
+    hasError: boolean = false;
     errorMessage: String = ''
 
-    constructor(private store: Store<{}>){
+    constructor(private store: Store<{login: LoginState}>){
+    }
+
+    ngOnInit(): void {
+        this.store.select(state => state.login)
+            .subscribe(s => {
+                if(s){
+                    this.hasError = s.fetchStatus === FetchStatus.Failed
+                    this.errorMessage = s.error ?? ''
+                }
+            })
     }
 
     onSubmit = () => {
-
+        // todo validate
+        this.store.dispatch(login({request: this.loginForm.value}))
     }
-
 }
