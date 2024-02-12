@@ -15,11 +15,11 @@ import { Store } from '@ngrx/store';
     imports: [CommonModule, ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatIconModule],
     styleUrl: './login.component.css',
     template: `
-    <div>
+    <div class="login">
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <h2>Login</h2>
 
-            <mat-card>
+            <mat-card class="login-card">
                 <mat-form-field>
                     <mat-label>User Name</mat-label>
                     <input matInput formControlName="userName">
@@ -39,8 +39,8 @@ import { Store } from '@ngrx/store';
 export class LoginComponent {
     
     loginForm = new FormGroup({ 
-        userName: new FormControl(String),
-        password: new FormControl(String)
+        userName: new FormControl(''),
+        password: new FormControl('')
     })
     errorMessage: String = ''
 

@@ -1,7 +1,7 @@
 import { createReducer, on } from "@ngrx/store";
 
 import FetchStatus from "../../../constants/fetchStatus";
-import { getTokenDetails } from '../../../helpers/jwthelpers';
+import { getTokenDetails } from '../../../helpers/jwtHelpers';
 import { login, loginSuccess, loginFail, logout } from './login.actions';
 
 export interface LoginState {

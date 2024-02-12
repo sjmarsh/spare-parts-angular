@@ -65,9 +65,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
             <input matInput type="date" formControlName="endDate">
           </mat-form-field>
 
-        </mat-card>
-
-        <details>
+          <details>
           <summary>Attributes</summary>
           <mat-card class="attributes-card">
             <button mat-icon-button aria-label="Add attribute" type="button" (click)="addAttribute()">
@@ -106,6 +104,9 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
           </mat-card>
         </details>
 
+        </mat-card>
+
+        
         <button mat-flat-button color="primary" type="submit">Submit</button>
         <button mat-flat-button type="button" (click)="handleClose()">Close</button>
 
