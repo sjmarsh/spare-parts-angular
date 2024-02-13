@@ -1,10 +1,10 @@
 import { createReducer, on } from "@ngrx/store";
 
 import FetchStatus from "../../../constants/fetchStatus";
-import { getTokenDetails } from '../../../helpers/jwtHelpers';
-import { login, loginSuccess, loginFail, logout } from './login.actions';
+import { getTokenDetails } from '../services/jwtHelpers';
+import { login, loginSuccess, loginFail, logout } from './auth.actions';
 
-export interface LoginState {
+export interface AuthState {
     accessToken: string | null;
     isAuthenticated: boolean;
     roles: Array<string> | null;
@@ -12,7 +12,7 @@ export interface LoginState {
     error?: string | null;
 }
 
-const initialState: LoginState = {
+const initialState: AuthState = {
     accessToken: null,
     isAuthenticated: false,
     roles: null,
@@ -20,7 +20,7 @@ const initialState: LoginState = {
     error: null
 }
 
-export const loginReducer = createReducer(
+export const authReducer = createReducer(
     initialState,
     on(login, (state) => ({...state, fetchStatus: FetchStatus.Loading})),
     on(loginSuccess, (state, {response}) => ({

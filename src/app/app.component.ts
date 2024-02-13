@@ -9,6 +9,9 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HttpClientModule } from '@angular/common/http';
 
+import { AuthorizationService } from './features/auth/services/authorization-service';
+import UserRoles from './constants/userRoles';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -37,8 +40,12 @@ export class AppComponent {
   sidenav!:MatSidenav;
   isMobile = true;
   isCollapsed = true;
+  readonly userRoles = UserRoles
+  authirzationService?: AuthorizationService
 
-  constructor(private observer: BreakpointObserver){}
+  constructor(private observer: BreakpointObserver, private authorizationService: AuthorizationService){
+    this.authirzationService = authorizationService
+  }
 
   ngOnInit() {
     this.observer.observe(['(max-width: 800px)']).subscribe((screenSize) => {

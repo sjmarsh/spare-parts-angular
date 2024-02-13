@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,8 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 
-import { login } from './store/login.actions';
-import { LoginState } from './store/login.reducers';
+import { login } from './store/auth.actions';
+import { AuthState } from './store/auth.reducers';
 import FetchStatus from '../../constants/fetchStatus';
 
 @Component({
@@ -29,7 +30,7 @@ import FetchStatus from '../../constants/fetchStatus';
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Password</mat-label>
-                    <input matInput formControlName="password">
+                    <input type="password" matInput formControlName="password">
                 </mat-form-field>
             </mat-card>
             <button mat-flat-button color="primary" type="submit">Login</button>
@@ -49,15 +50,19 @@ export class LoginComponent {
     hasError: boolean = false;
     errorMessage: String = ''
 
-    constructor(private store: Store<{login: LoginState}>){
+    constructor(private store: Store<{login: AuthState}>, private router: Router){
     }
 
     ngOnInit(): void {
         this.store.select(state => state.login)
             .subscribe(s => {
-                if(s){
+                if(s) {
+                    console.log(s)
                     this.hasError = s.fetchStatus === FetchStatus.Failed
                     this.errorMessage = s.error ?? ''
+                    if(s.fetchStatus === FetchStatus.Succeeded) {
+                        this.router.navigate(['/home']);
+                    }
                 }
             })
     }

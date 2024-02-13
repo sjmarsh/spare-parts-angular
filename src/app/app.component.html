@@ -24,7 +24,7 @@
             </a>
           </span>
         </a>
-        <a mat-list-item>
+        <a *ngIf="this.authirzationService?.userIsLoggedIn() && this.authirzationService?.userHasRequiredRoles([userRoles.Administrator])" mat-list-item>
           <span class="entry">
             <a routerLink="/part-list" routerLinkActive="active" ariaCurrentWhenActive="page">
               <mat-icon>list</mat-icon>
