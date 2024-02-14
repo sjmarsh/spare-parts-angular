@@ -40,29 +40,14 @@ export class PartService {
     }
 
 
-    fetchPart(partId: number): Observable<Part> {
-        /*
-        return this.http.get(`${this.baseUrl}/?id=${partId}`, {
-            headers: {
-                'Content-Type:': 'application/json',
-                Authorization: `Bearer ${this.token}`
-            }
-        })*/
-        console.log('service called')
-        return of({ 
-            id: partId, 
-            name: `Part ${partId}`, 
-            description: `The Part ${partId}`, 
-            category: PartCategory.Mechanical, 
-            weight: partId, 
-            price: partId, 
-            startDate: '2023-01-01',
-            attributes: [{
-                name: 'shape',
-                description: 'the shape of the part',
-                value: 'round'
-            }]
-        } as Part)
+    fetchPart(partId: number): Observable<PartResponse> {
+        const fetchUrl = `${this.baseUrl}/?id=${partId}`;
+        const tokenHeader = `Bearer ${this.token}`;
+        const httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': tokenHeader
+        });
+        return this.httpClient.get<PartResponse>(fetchUrl, {headers: httpHeaders});     
     }
 
     createPart(part: Part): Observable<PartResponse> {

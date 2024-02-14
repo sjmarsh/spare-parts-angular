@@ -7,8 +7,8 @@ export const showDetail = createAction('[PART] Show Detail', props<{mode: Detail
 export const hideDetail = createAction('[PART] Hide Detail')
 
 export const fetchPart = createAction('[PART] Fetch Part', props<{partId: number}>())
-export const fetchPartSuccess = createAction('[PART] Fetch Part Success', props<{part: Part}>())
-export const fetchPartFail = createAction('[PART] Fetch Part Fail')
+export const fetchPartSuccess = createAction('[PART] Fetch Part Success', props<{partResponse: PartResponse}>())
+export const fetchPartFail = createAction('[PART] Fetch Part Fail', props<{partResponse: PartResponse}>())
 
 export const createPart = createAction('[PART] Create Part', props<{part: Part}>())
 export const createPartSuccess = createAction('[PART] Create Part Success', props<{partResponse: PartResponse}>())

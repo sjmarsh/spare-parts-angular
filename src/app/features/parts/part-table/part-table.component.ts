@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
-import { fetchParts, fetchPartsSuccess, fetchPartsFail } from '../store/partsList.actions';
+import { fetchParts } from '../store/partsList.actions';
 import { deletePart, fetchPart } from '../store/parts.actions';
 
 import Part from '../types/Part';
-import PartCategory from '../types/PartCategory';
 import { PartDetailState } from '../store/parts.reducers';
 import { PartListState } from '../store/partsList.reducers';
 import FetchStatus from '../../../constants/fetchStatus';

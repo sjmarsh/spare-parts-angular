@@ -19,8 +19,8 @@ export class PartsEffects {
     loadPart$ = createEffect(() => this.actions$.pipe(
         ofType(fetchPart),
         switchMap(({partId}) => this.partService.fetchPart(partId).pipe(
-            map(part => fetchPartSuccess({ part })),
-            catchError(() => [fetchPartFail()])
+            map(partResponse => fetchPartSuccess({ partResponse })),
+            catchError((partResponse) => [fetchPartFail(partResponse)])
         ))
     ))
     
