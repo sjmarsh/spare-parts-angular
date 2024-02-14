@@ -1,18 +1,17 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable, catchError, map, of } from "rxjs";
+import { Observable } from "rxjs";
 import AuthenticationRequest from "../types/AuthenticationRequest";
 import AuthenticationResponse from "../types/AuthenticationResponse";
-
 
 @Injectable({
     providedIn: 'root'
   })
 export class AuthenticationService {
     //const baseUrl = `${config.SERVER_URL}/api/part`;
-    private baseUrl: string = 'https://localhost:7104/api/user';
-    private authenticateUrl: string = `${this.baseUrl}/authenticate`;
-    private refreshUrl: string = `${this.baseUrl}/refresh`;
+    private readonly baseUrl: string = 'https://localhost:7104/api/user';
+    private readonly authenticateUrl: string = `${this.baseUrl}/authenticate`;
+    private readonly refreshUrl: string = `${this.baseUrl}/refresh`;
 
     constructor(private httpClient: HttpClient) {
     }

@@ -9,6 +9,8 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { authReducer } from './features/auth/store/auth.reducers';
 import { AuthEffects } from './features/auth/store/auth.effects';
+import { partListReducer } from './features/parts/store/partsList.reducers';
+import { PartsListEffects } from './features/parts/store/partsList.effects';
 import { partReducer } from './features/parts/store/parts.reducers';
 import { PartsEffects } from './features/parts/store/parts.effects';
 
@@ -19,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(), 
     provideAnimations(),
     
-    provideStore({login: authReducer, parts: partReducer}),
-    provideEffects([AuthEffects, PartsEffects])
+    provideStore({login: authReducer, partList: partListReducer,  parts: partReducer}),
+    provideEffects([AuthEffects, PartsListEffects, PartsEffects])
   ]
 };

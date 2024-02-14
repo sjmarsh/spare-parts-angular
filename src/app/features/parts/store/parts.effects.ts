@@ -8,7 +8,7 @@ import {
     updatePart, updatePartSuccess, updatePartFail, 
     deletePart, deletePartSuccess, deletePartFail,
     fetchPart, fetchPartSuccess, fetchPartFail, 
-    showDetail } from './parts.actions';
+    showDetail  } from './parts.actions';
 import DetailMode from '../../../constants/detailMode';
 
 @Injectable()

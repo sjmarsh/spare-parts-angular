@@ -1,9 +1,15 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, of } from "rxjs";
+import { Store } from '@ngrx/store';
+import { AuthState } from '../../auth/store/auth.reducers';
+
 import Part from "../types/Part";
 import PartCategory from "../types/PartCategory";
 import PartResponse from "../types/PartResponse";
+import PartListReponse from "../types/PartListResponse";
+
+
 
 @Injectable({
     providedIn: 'root'
@@ -11,12 +17,28 @@ import PartResponse from "../types/PartResponse";
 export class PartService {
 
     //const baseUrl = `${config.SERVER_URL}/api/part`;
-    baseUrl = 'https://localhost:7104/api/part';
-    token = '12345' // todo create lookup function
+    private readonly baseUrl = 'https://localhost:7104/api/part';
+    private token = '' 
 
+    constructor(private httpClient: HttpClient, private store: Store<{login: AuthState}>) {
+        this.store.select(state => state.login).subscribe(s => {
+            this.token = s.accessToken ?? '';
+        })
+    }
 
-    //constructor(private http: HttpClient){
-    //}
+    fetchParts = (): Observable<PartListReponse> => {
+        const fetchUrl = `${this.baseUrl}/index`;
+        const paging = '?isCurrentOnly=False&skip=0&take=10'; // todo implement paging
+        const tokenHeader = `Bearer ${this.token}`;
+
+        const httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': tokenHeader
+        });
+        
+        return this.httpClient.get<PartListReponse>(`${fetchUrl}${paging}`, {headers: httpHeaders});
+    }
+
 
     fetchPart(partId: number): Observable<Part> {
         /*

@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
+import { fetchParts, fetchPartsSuccess, fetchPartsFail } from '../store/partsList.actions';
 import { deletePart, fetchPart } from '../store/parts.actions';
 
 import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
 import { PartDetailState } from '../store/parts.reducers';
+import { PartListState } from '../store/partsList.reducers';
+import FetchStatus from '../../../constants/fetchStatus';
 
 @Component({
   selector: 'app-part-table',
@@ -55,26 +58,41 @@ import { PartDetailState } from '../store/parts.reducers';
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+
+      <p>{{errorMessage}}<p>
     </div>
   `,
   styleUrl: './part-table.component.css'
 })
 export class PartTableComponent {
 
-  constructor(private store: Store<{parts: PartDetailState}>){
+  constructor(private partStore: Store<{parts: PartDetailState}>, private partListStore: Store<{partList: PartListState}>){
   }
   pageOfParts: Array<Part> = [
-    { id: 1, name: 'Part 1', description: 'Part 1 Desc', category: PartCategory.Electronic, weight: 1.1, price: 1.11, startDate: '2000-02-01' } as Part,
-    { id: 2, name: 'Part 2', description: 'Part 2 Desc', category: PartCategory.Electronic, weight: 2.1, price: 2.11, startDate: '2022-02-02' } as Part
   ]
   displayedColumns: string[] = ['name', 'description', 'category', 'weight', 'price', 'startDate', 'endDate', 'edit', 'delete']
+  errorMessage: string = ''
+
+  ngOnInit(): void {
+    this.partListStore.select(state => state.partList).subscribe(p => {
+      if(p.status === FetchStatus.Idle) {
+        this.partStore.dispatch(fetchParts());
+      }
+      if(p.status === FetchStatus.Failed) {
+        this.errorMessage = p.error ?? 'Failed to fetch parts'
+      }
+      if(p.status === FetchStatus.Succeeded) {
+        this.pageOfParts = p.items;
+      }
+    })
+  }
 
   handleEdit = (part: Part) => {
-    this.store.dispatch(fetchPart({partId: part.id}));
+    this.partStore.dispatch(fetchPart({partId: part.id}));
   }
 
   handleDelete = (part: Part) => {
     console.log('delete')
-    this.store.dispatch(deletePart({partId: part.id}));
+    this.partStore.dispatch(deletePart({partId: part.id}));
   }
 }
