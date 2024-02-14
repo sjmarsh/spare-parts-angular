@@ -16,11 +16,19 @@
             </a>
           </span>
         </a>
-        <a mat-list-item>  
+        <a *ngIf="!this.authirzationService?.userIsLoggedIn()" mat-list-item>  
           <span class="entry">
             <a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
-              <mat-icon>lock_open</mat-icon>
+              <mat-icon>lock</mat-icon>
               <span *ngIf="!isCollapsed">Login</span>
+            </a>
+          </span>
+        </a>
+        <a *ngIf="this.authirzationService?.userIsLoggedIn()" mat-list-item>
+          <span class="entry">
+            <a routerLink="/logout" routerLinkActive="active" ariaCurrentWhenActive="page">
+              <mat-icon>lock_open</mat-icon>
+              <span *ngIf="!isCollapsed">Logout</span>
             </a>
           </span>
         </a>
