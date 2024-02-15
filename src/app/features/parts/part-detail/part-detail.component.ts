@@ -201,6 +201,9 @@ export class PartDetailComponent {
 
   onSubmit = () => {
     console.log(`submit mode: ${this.detailMode}`);
+    const partToSubmit = this.partForm.value;
+    partToSubmit.startDate = partToSubmit.startDate.length > 0 ? partToSubmit.startDate : null;
+    partToSubmit.endDate = partToSubmit.endDate.length > 0 ? partToSubmit.endDate : null;  
     if(this.detailMode == DetailMode.Add) {
       this.store.dispatch(createPart({part: this.partForm.value}));
     }
