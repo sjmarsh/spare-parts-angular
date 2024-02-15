@@ -5,11 +5,8 @@ import { Store } from '@ngrx/store';
 import { AuthState } from '../../auth/store/auth.reducers';
 
 import Part from "../types/Part";
-import PartCategory from "../types/PartCategory";
 import PartResponse from "../types/PartResponse";
 import PartListReponse from "../types/PartListResponse";
-
-
 
 @Injectable({
     providedIn: 'root'
@@ -18,36 +15,24 @@ export class PartService {
 
     //const baseUrl = `${config.SERVER_URL}/api/part`;
     private readonly baseUrl = 'https://localhost:7104/api/part';
-    private token = '' 
+    private httpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
 
     constructor(private httpClient: HttpClient, private store: Store<{login: AuthState}>) {
         this.store.select(state => state.login).subscribe(s => {
-            this.token = s.accessToken ?? '';
+            const token = s.accessToken ?? '';
+            this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
         })
     }
 
     fetchParts = (): Observable<PartListReponse> => {
         const fetchUrl = `${this.baseUrl}/index`;
         const paging = '?isCurrentOnly=False&skip=0&take=10'; // todo implement paging
-        const tokenHeader = `Bearer ${this.token}`;
-
-        const httpHeaders = new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Authorization': tokenHeader
-        });
-        
-        return this.httpClient.get<PartListReponse>(`${fetchUrl}${paging}`, {headers: httpHeaders});
+        return this.httpClient.get<PartListReponse>(`${fetchUrl}${paging}`, {headers: this.httpHeaders});
     }
-
 
     fetchPart(partId: number): Observable<PartResponse> {
         const fetchUrl = `${this.baseUrl}/?id=${partId}`;
-        const tokenHeader = `Bearer ${this.token}`;
-        const httpHeaders = new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Authorization': tokenHeader
-        });
-        return this.httpClient.get<PartResponse>(fetchUrl, {headers: httpHeaders});     
+        return this.httpClient.get<PartResponse>(fetchUrl, {headers: this.httpHeaders});     
     }
 
     createPart(part: Part): Observable<PartResponse> {
@@ -62,13 +47,11 @@ export class PartService {
     }
 
     updatePart(part: Part): Observable<PartResponse> {
-        console.log(part)
         if(!part || part == undefined) {
             console.log('part undefined')
             return of({ hasError: true, message: 'Cannot update null part.'} as PartResponse);
         }
-        console.log('part updated');
-        return of({ value: part, hasError: false} as PartResponse);
+        return this.httpClient.put<PartResponse>(this.baseUrl, part, {headers: this.httpHeaders});
     }
 
     deletePart(partId: number): Observable<PartResponse> {
