@@ -40,11 +40,11 @@ import FetchStatus from '../../../constants/fetchStatus';
         </ng-container>
         <ng-container matColumnDef="startDate">
           <th mat-header-cell *matHeaderCellDef>Start Date</th>
-          <td mat-cell *matCellDef="let element">{{element.startDate}}</td>
+          <td mat-cell *matCellDef="let element">{{element.startDate | date:'dd/MM/yyyy'}}</td>
         </ng-container>
         <ng-container matColumnDef="endDate">
           <th mat-header-cell *matHeaderCellDef>End Date</th>
-          <td mat-cell *matCellDef="let element">{{element.endDate}}</td>
+          <td mat-cell *matCellDef="let element">{{element.endDate | date:'dd/MM/yyyy'}}</td>
         </ng-container>
         <ng-container matColumnDef="edit">
           <th mat-header-cell *matHeaderCellDef></th>

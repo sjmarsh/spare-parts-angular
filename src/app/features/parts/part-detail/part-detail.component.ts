@@ -164,7 +164,7 @@ export class PartDetailComponent {
       })
   }
 
-  initForm = (part: Part) : FormGroup => {
+  private initForm = (part: Part) : FormGroup => {
     console.log('init Form')
     console.log(part)
     let fg = new FormGroup({
@@ -173,14 +173,14 @@ export class PartDetailComponent {
       category: new FormControl(part.category),
       weight: new FormControl(part.weight),
       price: new FormControl(part.price),
-      startDate: new FormControl(part.startDate),
-      endDate: new FormControl(part.endDate),
+      startDate: new FormControl(this.getDateForPicker(part.startDate)),
+      endDate: new FormControl(this.getDateForPicker(part.endDate)),
       attributes: new FormArray<FormGroup>([])
     });
     return fg;
   }
 
-  getAttributeFormArray = () : FormArray<FormGroup> => {
+  private getAttributeFormArray = () : FormArray<FormGroup> => {
     const defaultValue = new FormArray<FormGroup>([])
     if(!this.partForm) {
       return defaultValue;
@@ -190,6 +190,13 @@ export class PartDetailComponent {
       return defaultValue;
     }
     return attribs;
+  }
+
+  private getDateForPicker = (dateString?: string | null) => {
+    if(!dateString) {
+        return '';
+    }
+    return dateString.substring(0, 10);
   }
 
   onSubmit = () => {
@@ -216,7 +223,7 @@ export class PartDetailComponent {
     this.table.renderRows();
   }
 
-  deleteAttribute = (attribute: PartAttribute) => {
+  private deleteAttribute = (attribute: PartAttribute) => {
     // todo add a confirmation message before deleting
     const attrArray = this.getAttributeFormArray();
     const attrIndex = attrArray.value.findIndex(a => a === attribute);
