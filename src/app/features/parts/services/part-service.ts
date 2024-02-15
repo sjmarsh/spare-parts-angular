@@ -36,14 +36,11 @@ export class PartService {
     }
 
     createPart(part: Part): Observable<PartResponse> {
-        
         if(!part || part == undefined) {
             console.log('part undefined')
             return of({ hasError: true, message: 'Cannot create null part.'} as PartResponse);
         }
-        part.id = 1;
-        console.log('part created');
-        return of({ value: part, hasError: false} as PartResponse);
+        return this.httpClient.post<PartResponse>(this.baseUrl, part, {headers: this.httpHeaders});
     }
 
     updatePart(part: Part): Observable<PartResponse> {
@@ -55,13 +52,11 @@ export class PartService {
     }
 
     deletePart(partId: number): Observable<PartResponse> {
-        console.log(`delete part ${partId}`)
         if(partId === 0){
-            return of({} as PartResponse);
+            return of({ hasError: true, message: 'PartId must be provided for the part to delete.'} as PartResponse);
         }
-
-        // TODO : delete
-        return of({ message: 'deleted'} as PartResponse);
+        const deleteUrl = `${this.baseUrl}/?id=${partId}`;
+        return this.httpClient.delete<PartResponse>(deleteUrl, {headers: this.httpHeaders});
     }
 
 }
