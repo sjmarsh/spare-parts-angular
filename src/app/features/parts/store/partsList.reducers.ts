@@ -16,7 +16,7 @@ export interface PartListState {
 const initialState : PartListState = {
     items: [],
     totalItemCount: 0,
-    currentPage: 1,
+    currentPage: 0,
     status: FetchStatus.Idle,
     hasError: false,
     error: null

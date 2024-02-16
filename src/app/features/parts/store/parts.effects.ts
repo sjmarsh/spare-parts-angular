@@ -41,7 +41,7 @@ export class PartsEffects {
 
     createPartSuccess$ = createEffect(() => this.actions$.pipe(
         ofType(createPartSuccess),
-        map(() => fetchParts())
+        map(() => fetchParts({page: null}))
     ))
 
     updatePart$ = createEffect(() => this.actions$.pipe(
@@ -54,7 +54,7 @@ export class PartsEffects {
 
     updatePartSuccess$ = createEffect(() => this.actions$.pipe(
         ofType(updatePartSuccess),
-        map(() => fetchParts())
+        map(() => fetchParts({page: null}))
     ))
 
     deletePart$ = createEffect(() => this.actions$.pipe(
@@ -67,7 +67,7 @@ export class PartsEffects {
 
     deletePartSuccess$ = createEffect(() => this.actions$.pipe(
         ofType(deletePartSuccess),
-        map(() => fetchParts())
+        map(() => fetchParts({page: null}))
     ))
 
 }

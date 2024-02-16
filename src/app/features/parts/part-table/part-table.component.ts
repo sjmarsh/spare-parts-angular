@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
 import { fetchParts } from '../store/partsList.actions';
@@ -10,11 +11,12 @@ import Part from '../types/Part';
 import { PartDetailState } from '../store/parts.reducers';
 import { PartListState } from '../store/partsList.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
+import TableSettings from '../../../constants/tableSettings';
 
 @Component({
   selector: 'app-part-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule],
+  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule],
   template: `
     <div>
       <table mat-table [dataSource]="pageOfParts">
@@ -57,6 +59,15 @@ import FetchStatus from '../../../constants/fetchStatus';
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+      <mat-paginator
+        (page)="handlePageEvent($event)"
+        [length]="totalItemCount"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage"
+        [showFirstLastButtons]="true"
+        aria-label="Select parts list page"
+      >
+      </mat-paginator>
 
       <p>{{errorMessage}}<p>
     </div>
@@ -67,23 +78,29 @@ export class PartTableComponent {
 
   constructor(private partStore: Store<{parts: PartDetailState}>, private partListStore: Store<{partList: PartListState}>){
   }
-  pageOfParts: Array<Part> = [
-  ]
+
+  pageOfParts: Array<Part> = []
   displayedColumns: string[] = ['name', 'description', 'category', 'weight', 'price', 'startDate', 'endDate', 'edit', 'delete']
+  totalItemCount: number = 0
+  pageSize: number = TableSettings.PageSize
+  currentPage: number = 0
   errorMessage: string = ''
 
   ngOnInit(): void {
     this.partListStore.select(state => state.partList).subscribe(p => {
       if(p.status === FetchStatus.Idle && p.items.length === 0) {
-        this.partStore.dispatch(fetchParts());
+        this.partStore.dispatch(fetchParts({page: this.currentPage}));
       }
       if(p.status === FetchStatus.Failed) {
         this.errorMessage = p.error ?? 'Failed to fetch parts'
       }
       if(p.status === FetchStatus.Succeeded) {
         this.pageOfParts = p.items;
+        this.totalItemCount = p.totalItemCount;
+        this.currentPage = p.currentPage ?? 0;
       }
     })
+    
   }
 
   handleEdit = (part: Part) => {
@@ -93,5 +110,11 @@ export class PartTableComponent {
   handleDelete = (part: Part) => {
     console.log('delete')
     this.partStore.dispatch(deletePart({partId: part.id}));
+  }
+
+  handlePageEvent = (e: PageEvent) => {
+    this.currentPage = e.pageIndex;
+    console.log(e.pageIndex)
+    this.partStore.dispatch(fetchParts({page: e.pageIndex}));
   }
 }

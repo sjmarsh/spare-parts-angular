@@ -12,7 +12,7 @@ export class PartsListEffects {
     
     fetchParts$ = createEffect(() => this.actions$.pipe(
         ofType(fetchParts),
-        switchMap(() => this.partService.fetchParts().pipe(
+        switchMap(({page}) => this.partService.fetchParts(page).pipe(
             map(partListResponse => fetchPartsSuccess({ partListResponse})),
             catchError((partListResponse) => [fetchPartsFail({ partListResponse })])
         ))
