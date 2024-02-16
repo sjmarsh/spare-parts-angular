@@ -120,6 +120,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
 
 export class PartDetailComponent {
   part: Part = { 
+    id: 0,
     name: '', 
     description: '', 
     category: PartCategory.Electronic, 
@@ -168,6 +169,7 @@ export class PartDetailComponent {
     console.log('init Form')
     console.log(part)
     let fg = new FormGroup({
+      id: new FormControl(part.id),
       name: new FormControl(part.name),
       description: new FormControl(part.description),
       category: new FormControl(part.category),
@@ -180,7 +182,7 @@ export class PartDetailComponent {
     return fg;
   }
 
-  private getAttributeFormArray = () : FormArray<FormGroup> => {
+  getAttributeFormArray = () : FormArray<FormGroup> => {
     const defaultValue = new FormArray<FormGroup>([])
     if(!this.partForm) {
       return defaultValue;
@@ -226,7 +228,7 @@ export class PartDetailComponent {
     this.table.renderRows();
   }
 
-  private deleteAttribute = (attribute: PartAttribute) => {
+  deleteAttribute = (attribute: PartAttribute) => {
     // todo add a confirmation message before deleting
     const attrArray = this.getAttributeFormArray();
     const attrIndex = attrArray.value.findIndex(a => a === attribute);

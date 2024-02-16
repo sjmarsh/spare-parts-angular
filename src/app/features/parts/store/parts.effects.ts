@@ -1,6 +1,6 @@
 import { Actions, createEffect, ofType} from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import { switchMap, map, catchError } from 'rxjs';
+import { switchMap, map, tap, catchError } from 'rxjs';
 
 import { PartService } from '../services/part-service';
 import { 
@@ -9,7 +9,9 @@ import {
     deletePart, deletePartSuccess, deletePartFail,
     fetchPart, fetchPartSuccess, fetchPartFail, 
     showDetail  } from './parts.actions';
+import { fetchParts } from './partsList.actions';
 import DetailMode from '../../../constants/detailMode';
+
 
 @Injectable()
 export class PartsEffects {
@@ -43,6 +45,11 @@ export class PartsEffects {
             map(partResponse => updatePartSuccess({partResponse})),
             catchError((partResponse) => [updatePartFail(partResponse)])
         ))
+    ))
+
+    updatePartSuccess$ = createEffect(() => this.actions$.pipe(
+        ofType(updatePartSuccess),
+        map(() => fetchParts())
     ))
 
     deletePart$ = createEffect(() => this.actions$.pipe(

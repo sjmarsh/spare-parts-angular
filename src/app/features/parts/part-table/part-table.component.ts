@@ -74,7 +74,7 @@ export class PartTableComponent {
 
   ngOnInit(): void {
     this.partListStore.select(state => state.partList).subscribe(p => {
-      if(p.status === FetchStatus.Idle) {
+      if(p.status === FetchStatus.Idle && p.items.length === 0) {
         this.partStore.dispatch(fetchParts());
       }
       if(p.status === FetchStatus.Failed) {
