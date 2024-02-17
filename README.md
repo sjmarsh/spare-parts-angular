@@ -1,10 +1,12 @@
 # SparePartsAngular
-This is an Angular based client for the Spare Parts .Net API [https://github.com/sjmarsh/SpareParts](https://github.com/sjmarsh/SpareParts).  Similarly to that repo, this is a Spike/Playground project to test out different React technologies and patterns.
+This is an Angular based client for the Spare Parts .Net API [https://github.com/sjmarsh/SpareParts](https://github.com/sjmarsh/SpareParts).  Similarly to that repo, this is a Spike/Playground project to test out different Angular technologies and patterns.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
 
 ## Technologies:
 - Angular
+- Angular Material
+- NgRx
 
 
 
