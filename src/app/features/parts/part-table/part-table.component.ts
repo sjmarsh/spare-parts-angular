@@ -22,7 +22,7 @@ import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
   template: `
     <div>
       <div class='tool-container'>
-        <button mat-fab extended color="primary" class="tool-button" (click)="handleFetchReport()">
+        <button mat-fab extended color="primary" disabled class="tool-button" (click)="handleFetchReport()">
           <mat-icon>print</mat-icon>
           Report
         </button>       
@@ -114,7 +114,7 @@ export class PartTableComponent {
   }
 
   handleFetchReport = () => {
-
+    // todo
   }
 
   handleAddPart = () => {
