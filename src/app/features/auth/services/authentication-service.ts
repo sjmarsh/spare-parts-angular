@@ -1,6 +1,8 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
+
+import { APP_CONFIG, AppConfig } from "../../../app.config";
 import AuthenticationRequest from "../types/AuthenticationRequest";
 import AuthenticationResponse from "../types/AuthenticationResponse";
 
@@ -8,12 +10,14 @@ import AuthenticationResponse from "../types/AuthenticationResponse";
     providedIn: 'root'
   })
 export class AuthenticationService {
-    //const baseUrl = `${config.SERVER_URL}/api/part`;
-    private readonly baseUrl: string = 'https://localhost:7104/api/user';
-    private readonly authenticateUrl: string = `${this.baseUrl}/authenticate`;
-    private readonly refreshUrl: string = `${this.baseUrl}/refresh`;
+    private baseUrl: string;
+    private authenticateUrl: string;
+    private refreshUrl: string;
 
-    constructor(private httpClient: HttpClient) {
+    constructor(@Inject(APP_CONFIG) private appConfig: AppConfig, private httpClient: HttpClient) {
+        this.baseUrl = `${this.appConfig.serverUrl}/api/user`;
+        this.authenticateUrl = `${this.baseUrl}/authenticate`;
+        this.refreshUrl = `${this.baseUrl}/refresh`;
     }
 
     login = (request: AuthenticationRequest) : Observable<AuthenticationResponse> => {
