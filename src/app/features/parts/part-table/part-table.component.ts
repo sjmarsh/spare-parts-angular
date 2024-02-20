@@ -4,14 +4,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
-import { fetchParts } from '../store/partsList.actions';
-import { deletePart, fetchPart } from '../store/parts.actions';
 
 import Part from '../types/Part';
 import { PartDetailState } from '../store/parts.reducers';
 import { PartListState } from '../store/partsList.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
 import TableSettings from '../../../constants/tableSettings';
+import { fetchParts, setCurrentPage } from '../store/partsList.actions';
+import { deletePart, fetchPart } from '../store/parts.actions';
 
 @Component({
   selector: 'app-part-table',
@@ -68,7 +68,6 @@ import TableSettings from '../../../constants/tableSettings';
         aria-label="Select parts list page"
       >
       </mat-paginator>
-
       <p>{{errorMessage}}<p>
     </div>
   `,
@@ -114,7 +113,7 @@ export class PartTableComponent {
 
   handlePageEvent = (e: PageEvent) => {
     this.currentPage = e.pageIndex;
-    console.log(e.pageIndex)
-    this.partStore.dispatch(fetchParts({page: e.pageIndex}));
+    this.partListStore.dispatch(setCurrentPage({page: e.pageIndex}));
+    this.partListStore.dispatch(fetchParts({page: e.pageIndex}));
   }
 }

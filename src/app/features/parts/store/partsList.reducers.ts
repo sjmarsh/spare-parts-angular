@@ -2,7 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 
 import Part from "../types/Part";
 import FetchStatus from "../../../constants/fetchStatus";
-import { fetchParts, fetchPartsSuccess, fetchPartsFail } from "./partsList.actions";
+import { fetchParts, fetchPartsSuccess, fetchPartsFail, setCurrentPage } from "./partsList.actions";
 
 export interface PartListState {
     items: Array<Part>
@@ -40,5 +40,9 @@ export const partListReducer = createReducer(
         hasError: true, 
         error: partListResponse.message ?? 'Error occurred fetching parts.',
         status: FetchStatus.Failed
+     })),
+     on(setCurrentPage, (state, {page}) => ({
+        ...state,
+        currentPage: page
      }))
 )
