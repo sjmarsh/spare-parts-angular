@@ -3,22 +3,34 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
 import { PartDetailState } from '../store/parts.reducers';
 import { PartListState } from '../store/partsList.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
+import DetailMode from '../../../constants/detailMode';
 import TableSettings from '../../../constants/tableSettings';
 import { fetchParts, setCurrentPage } from '../store/partsList.actions';
-import { deletePart, fetchPart } from '../store/parts.actions';
+import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
 
 @Component({
   selector: 'app-part-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule],
+  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
   template: `
     <div>
+      <div class='tool-container'>
+        <button mat-fab extended color="primary" class="tool-button" (click)="handleFetchReport()">
+          <mat-icon>print</mat-icon>
+          Report
+        </button>       
+        <button mat-fab extended color="primary" class="tool-button" (click)="handleAddPart()">
+          <mat-icon>add</mat-icon>
+          Add Part
+        </button>
+       </div>
       <table mat-table [dataSource]="pageOfParts">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -99,7 +111,14 @@ export class PartTableComponent {
         this.currentPage = p.currentPage ?? 0;
       }
     })
-    
+  }
+
+  handleFetchReport = () => {
+
+  }
+
+  handleAddPart = () => {
+    this.partStore.dispatch(showDetail({mode: DetailMode.Add}));
   }
 
   handleEdit = (part: Part) => {

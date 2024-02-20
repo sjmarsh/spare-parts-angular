@@ -144,10 +144,10 @@ export class PartDetailComponent {
   ngOnInit(): void {   
     this.store.select(state => state.parts)
       .subscribe(s => {
+        console.log(`init with detail mode: ${s.mode}`)
+        this.detailMode = s.mode;
         if(s.status === FetchStatus.Succeeded){
           this.part = {...s.value};
-          this.partForm = this.initForm(this.part);
-          this.detailMode = s.mode;
           if(this.part.attributes && this.part.attributes.length > 0){
             const attrArray = this.partForm.get('attributes') as FormArray;
             this.part.attributes.forEach(attr => {
@@ -158,6 +158,7 @@ export class PartDetailComponent {
               }));
             });
           }
+          this.partForm = this.initForm(this.part);
         }
         if(s.status === FetchStatus.Failed) {
           this.errorMessage = s.error ?? 'Something went wrong while trying to fetch part';
@@ -205,12 +206,14 @@ export class PartDetailComponent {
     console.log(`submit mode: ${this.detailMode}`);
     const partToSubmit = this.partForm.value;
     partToSubmit.startDate = partToSubmit.startDate.length > 0 ? partToSubmit.startDate : null;
-    partToSubmit.endDate = partToSubmit.endDate.length > 0 ? partToSubmit.endDate : null;  
-    if(this.detailMode == DetailMode.Add) {
-      this.store.dispatch(createPart({part: this.partForm.value}));
+    partToSubmit.endDate = partToSubmit.endDate.length > 0 ? partToSubmit.endDate : null;
+    
+    if(this.detailMode === DetailMode.Add) {
+      partToSubmit.id = 0;
+      this.store.dispatch(createPart({part: partToSubmit}));
     }
     else {
-      this.store.dispatch(updatePart({part: this.partForm.value}));
+      this.store.dispatch(updatePart({part: partToSubmit}));
     }
   }
 
