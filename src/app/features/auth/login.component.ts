@@ -60,9 +60,10 @@ export class LoginComponent {
                     console.log(s)
                     this.hasError = s.fetchStatus === FetchStatus.Failed
                     this.errorMessage = s.error ?? ''
-                    if(s.fetchStatus === FetchStatus.Succeeded) {
+                    if(s.fetchStatus === FetchStatus.Succeeded && s.isAuthenticated) {
                         this.router.navigate(['/home']);
                     }
+                    
                 }
             })
     }

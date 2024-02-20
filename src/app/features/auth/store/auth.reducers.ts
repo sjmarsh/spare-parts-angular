@@ -28,6 +28,7 @@ export const authReducer = createReducer(
         fetchStatus: FetchStatus.Succeeded, 
         accessToken: response.accessToken, 
         isAuthenticated: response.isAuthenticated,
+        error: response.message,
         roles: getTokenDetails(response.accessToken).Roles
     })),
     on(loginFail, (state, {response}) => ({
