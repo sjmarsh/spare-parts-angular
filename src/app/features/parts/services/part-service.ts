@@ -1,10 +1,11 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import { Store } from '@ngrx/store';
+
+import { APP_CONFIG, AppConfig } from "../../../app.config";
 import { AuthState } from '../../auth/store/auth.reducers';
 import { PartListState } from "../store/partsList.reducers";
-
 import Part from "../types/Part";
 import PartResponse from "../types/PartResponse";
 import PartListReponse from "../types/PartListResponse";
@@ -14,13 +15,12 @@ import TableSettings from "../../../constants/tableSettings";
     providedIn: 'root'
   })
 export class PartService {
-
-    //const baseUrl = `${config.SERVER_URL}/api/part`;
-    private readonly baseUrl = 'https://localhost:7104/api/part';
+    private baseUrl = ''
     private httpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     private currentPage: number = 0;
 
-    constructor(private httpClient: HttpClient, private store: Store<{login: AuthState}>, private partListStore: Store<{partList: PartListState}>) {
+    constructor(@Inject(APP_CONFIG) private appConfig: AppConfig, private httpClient: HttpClient, private store: Store<{login: AuthState}>, private partListStore: Store<{partList: PartListState}>) {
+        this.baseUrl = `${this.appConfig.serverUrl}/api/part`;
         this.store.select(state => state.login).subscribe(s => {
             const token = s.accessToken ?? '';
             this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
