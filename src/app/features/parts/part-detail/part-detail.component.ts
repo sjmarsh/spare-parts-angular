@@ -7,6 +7,7 @@ import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
@@ -20,7 +21,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
 @Component({
   selector: 'app-part-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatInputModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatInputModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatIconModule, MatSelectModule],
   styleUrl: './part-detail.component.css',
   template: `
     <div class="part-detail">
@@ -41,7 +42,9 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
           
           <mat-form-field>
             <mat-label>Category</mat-label>
-            <input matInput formControlName="category">
+            <mat-select name="category" formControlName="category">
+              <mat-option *ngFor="let cat of categories" [value]="cat">{{cat}}</mat-option>
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field>
@@ -137,6 +140,8 @@ export class PartDetailComponent {
   @ViewChild(MatTable) table!: MatTable<any>; // ref: https://stackoverflow.com/questions/49284358/calling-renderrows-on-angular-material-table/50495353#50495353
   displayedColumns: string[] = ['name', 'description', 'value', 'delete']
   
+  categories = Object.keys(PartCategory)
+
   constructor(private store: Store<{parts: PartDetailState}>){
     this.partForm = this.initForm(this.part)
   }
