@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div>
+    <div class="home">
         <h1>Spare Parts - Angular</h1>
         <p>This is a simple application to spike/demo various Angular features. </p>
         <p>*Not intended to be a real-world inventory system :-)</p>
