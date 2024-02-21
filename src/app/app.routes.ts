@@ -10,5 +10,6 @@ export const routes: Routes = [
     { path: 'home', title: 'Home', component: HomeComponent },
     { path: 'login', title: 'Login', component: LoginComponent },
     { path: 'logout', title: 'Logout', component: LogoutComponent },
-    { path: 'part-list', title: 'Part List', canActivate: [adminGuard], component: PartListComponent }
+    { path: 'part-list', title: 'Part List', canActivate: [adminGuard], component: PartListComponent },
+    { path: '**', component: HomeComponent }
 ];
