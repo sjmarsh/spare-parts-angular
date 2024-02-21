@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
@@ -15,13 +16,14 @@ import PartAttribute from '../types/PartAttribute';
 import PartCategory from '../types/PartCategory';
 import DetailMode from '../../../constants/detailMode';
 import FetchStatus from '../../../constants/fetchStatus';
+import { MessageBoxModel, MessageBoxComponent } from '../../../components/message-box/message-box.component';
 import { PartDetailState } from '../store/parts.reducers';
 import { createPart, updatePart, hideDetail } from '../store/parts.actions';
 
 @Component({
   selector: 'app-part-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatInputModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatIconModule, MatSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatInputModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatIconModule, MatSelectModule, MatDialogModule],
   styleUrl: './part-detail.component.css',
   template: `
     <div class="part-detail">
@@ -130,7 +132,8 @@ export class PartDetailComponent {
     weight: 0, 
     price: 0, 
     startDate: '2000-01-01', 
-    endDate: null
+    endDate: null,
+    attributes: []
   } as Part
   
   partForm: FormGroup
@@ -142,7 +145,7 @@ export class PartDetailComponent {
   
   categories = Object.keys(PartCategory)
 
-  constructor(private store: Store<{parts: PartDetailState}>){
+  constructor(public dialog: MatDialog, private store: Store<{parts: PartDetailState}>){
     this.partForm = this.initForm(this.part)
   }
 
@@ -153,16 +156,6 @@ export class PartDetailComponent {
         this.detailMode = s.mode;
         if(s.status === FetchStatus.Succeeded){
           this.part = {...s.value};
-          if(this.part.attributes && this.part.attributes.length > 0){
-            const attrArray = this.partForm.get('attributes') as FormArray;
-            this.part.attributes.forEach(attr => {
-              attrArray.push(new FormGroup({
-                name: new FormControl(attr.name),
-                description: new FormControl(attr.description),
-                value: new FormControl(attr.value)
-              }));
-            });
-          }
           this.partForm = this.initForm(this.part);
         }
         if(s.status === FetchStatus.Failed) {
@@ -172,7 +165,6 @@ export class PartDetailComponent {
   }
 
   private initForm = (part: Part) : FormGroup => {
-    console.log('init Form')
     console.log(part)
     let fg = new FormGroup({
       id: new FormControl(part.id),
@@ -185,6 +177,16 @@ export class PartDetailComponent {
       endDate: new FormControl(this.getDateForPicker(part.endDate)),
       attributes: new FormArray<FormGroup>([])
     });
+    if(this.part.attributes && this.part.attributes.length > 0){
+      const attrArray = fg.get('attributes') as FormArray;
+      this.part.attributes.forEach(attr => {
+        attrArray.push(new FormGroup({
+          name: new FormControl(attr.name),
+          description: new FormControl(attr.description),
+          value: new FormControl(attr.value)
+        }));
+      });
+    }
     return fg;
   }
 
@@ -237,10 +239,15 @@ export class PartDetailComponent {
   }
 
   deleteAttribute = (attribute: PartAttribute) => {
-    // todo add a confirmation message before deleting
-    const attrArray = this.getAttributeFormArray();
-    const attrIndex = attrArray.value.findIndex(a => a === attribute);
-    attrArray.removeAt(attrIndex);
-    this.table.renderRows();
+    const messageBoxData = new MessageBoxModel('Confirm Delete', 'Are you sure you want to delete this attribute?');
+    const messageBoxRef = this.dialog.open(MessageBoxComponent, { maxWidth: '400px', data: messageBoxData});
+    messageBoxRef.afterClosed().subscribe((shouldDelete: boolean) => {
+      if(shouldDelete) {    
+        const attrArray = this.getAttributeFormArray();
+        const attrIndex = attrArray.value.findIndex(a => a === attribute);
+        attrArray.removeAt(attrIndex);
+        this.table.renderRows();        
+      }  
+    });
   }
 }
