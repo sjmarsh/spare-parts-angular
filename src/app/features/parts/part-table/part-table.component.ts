@@ -4,21 +4,23 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
 import Part from '../types/Part';
-import { PartDetailState } from '../store/parts.reducers';
-import { PartListState } from '../store/partsList.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
 import DetailMode from '../../../constants/detailMode';
 import TableSettings from '../../../constants/tableSettings';
+import { MessageBoxModel, MessageBoxComponent } from '../../../components/message-box/message-box.component';
+import { PartDetailState } from '../store/parts.reducers';
+import { PartListState } from '../store/partsList.reducers';
 import { fetchParts, setCurrentPage } from '../store/partsList.actions';
 import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
 
 @Component({
   selector: 'app-part-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, MatDialogModule, MessageBoxComponent],
   template: `
     <div>
       <div class='tool-container'>
@@ -87,7 +89,7 @@ import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
 })
 export class PartTableComponent {
 
-  constructor(private partStore: Store<{parts: PartDetailState}>, private partListStore: Store<{partList: PartListState}>){
+  constructor(public dialog: MatDialog, private partStore: Store<{parts: PartDetailState}>, private partListStore: Store<{partList: PartListState}>){
   }
 
   pageOfParts: Array<Part> = []
@@ -126,8 +128,13 @@ export class PartTableComponent {
   }
 
   handleDelete = (part: Part) => {
-    console.log('delete')
-    this.partStore.dispatch(deletePart({partId: part.id}));
+    const messageBoxData = new MessageBoxModel('Confirm Delete', 'Are you sure you want to delete this part?');
+    const messageBoxRef = this.dialog.open(MessageBoxComponent, { maxWidth: '400px', data: messageBoxData});
+    messageBoxRef.afterClosed().subscribe((shouldDelete: boolean) => {
+      if(shouldDelete) {
+        this.partStore.dispatch(deletePart({partId: part.id}));
+      }  
+    });
   }
 
   handlePageEvent = (e: PageEvent) => {
