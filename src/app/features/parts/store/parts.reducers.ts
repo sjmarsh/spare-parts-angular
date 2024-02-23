@@ -9,7 +9,6 @@ import { hideDetail, showDetail,
     updatePart, updatePartSuccess, updatePartFail, 
     deletePart, deletePartSuccess, deletePartFail,
     fetchPart, fetchPartSuccess, fetchPartFail } from "./parts.actions";
-import { error } from "console";
 
 // ref: https://www.syncfusion.com/blogs/post/angular-state-management-ngrx.aspx
 
