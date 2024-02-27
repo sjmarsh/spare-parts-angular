@@ -14,6 +14,10 @@ describe('PartDetailComponent', () => {
   let fixture: ComponentFixture<PartDetailComponent>;
   let store: MockStore;
   
+  const initialAttributes = new Array<PartAttribute>(
+    { name: 'Attribute1', description: 'The first attribute', value: 'Its a part attribute' } as PartAttribute
+  )
+
   const initialPart = { 
     id: 1, 
     name: 'Part 1', 
@@ -22,7 +26,7 @@ describe('PartDetailComponent', () => {
     price: 10.1, 
     startDate: '2020-11-01', 
     endDate: '2022-12-02', 
-    attributes: new Array<PartAttribute> 
+    attributes: initialAttributes
   } as Part;
   
   const initialState = {
@@ -99,6 +103,17 @@ describe('PartDetailComponent', () => {
     expect(component.part.endDate).toBe(initialPart.endDate);
     const endDateInputValue = fixture.nativeElement.querySelector('input[formControlName=endDate]').value;
     expect(endDateInputValue).toBe(initialPart.endDate?.toString());
+  })
+
+  it('should display attributes', () => {
+    const attributesDetailsElement: HTMLDetailsElement = fixture.nativeElement.querySelector('details');
+    const rows = attributesDetailsElement.querySelectorAll('tr');
+    expect(rows.length).toBe(2);  // nb. first row is header
+    const attributeInputs = rows[1].querySelectorAll('input');
+    expect(attributeInputs.length).toBe(3);
+    expect(attributeInputs[0].value).toBe(initialAttributes[0].name);
+    expect(attributeInputs[1].value).toBe(initialAttributes[0].description ?? '');
+    expect(attributeInputs[2].value).toBe(initialAttributes[0].value);
   })
 
 
