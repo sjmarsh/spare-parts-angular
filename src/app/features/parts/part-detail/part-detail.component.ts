@@ -27,13 +27,13 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
   styleUrl: './part-detail.component.css',
   template: `
     <div class="part-detail">
-      <form [formGroup]="partForm" (ngSubmit)="onSubmit()">
+      <form *ngIf="partForm" [formGroup]="partForm" (ngSubmit)="onSubmit()">
         <h2>{{detailMode}} Part</h2>
         
         <mat-card class="detail-card">
 
           <mat-form-field>
-            <mat-label>Enter Name</mat-label>
+            <mat-label>Name</mat-label>
             <input matInput formControlName="name">
           </mat-form-field>
             
@@ -136,7 +136,7 @@ export class PartDetailComponent {
     attributes: []
   } as Part
   
-  partForm: FormGroup
+  partForm?: FormGroup | null = null
   detailMode: string = ''
   errorMessage: string = ''
 
@@ -146,13 +146,11 @@ export class PartDetailComponent {
   categories = Object.keys(PartCategory)
 
   constructor(public dialog: MatDialog, private store: Store<{parts: PartDetailState}>){
-    this.partForm = this.initForm(this.part)
   }
 
   ngOnInit(): void {   
     this.store.select(state => state.parts)
       .subscribe(s => {
-        console.log(`init with detail mode: ${s.mode}`)
         this.detailMode = s.mode;
         if(s.status === FetchStatus.Succeeded){
           this.part = {...s.value};
@@ -165,7 +163,6 @@ export class PartDetailComponent {
   }
 
   private initForm = (part: Part) : FormGroup => {
-    console.log(part)
     let fg = new FormGroup({
       id: new FormControl(part.id),
       name: new FormControl(part.name),
@@ -211,6 +208,10 @@ export class PartDetailComponent {
 
   onSubmit = () => {
     console.log(`submit mode: ${this.detailMode}`);
+    if(this.partForm == null) {
+      // todo better error handling
+      throw('unable to submit null form')
+    }
     const partToSubmit = this.partForm.value;
     partToSubmit.startDate = partToSubmit.startDate.length > 0 ? partToSubmit.startDate : null;
     partToSubmit.endDate = partToSubmit.endDate.length > 0 ? partToSubmit.endDate : null;
