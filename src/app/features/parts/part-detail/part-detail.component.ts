@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, FormArray, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -166,12 +166,12 @@ export class PartDetailComponent {
   private initForm = (part: Part) : FormGroup => {
     let fg = new FormGroup({
       id: new FormControl(part.id),
-      name: new FormControl(part.name),
+      name: new FormControl(part.name, [Validators.required]),
       description: new FormControl(part.description),
       category: new FormControl(part.category),
-      weight: new FormControl(part.weight),
-      price: new FormControl(part.price),
-      startDate: new FormControl(this.getDateForPicker(part.startDate)),
+      weight: new FormControl(part.weight, [Validators.required, Validators.min(0)]),
+      price: new FormControl(part.price, [Validators.required, Validators.min(0)]),
+      startDate: new FormControl(this.getDateForPicker(part.startDate), [Validators.required]),
       endDate: new FormControl(this.getDateForPicker(part.endDate)),
       attributes: new FormArray<FormGroup>([])
     });
