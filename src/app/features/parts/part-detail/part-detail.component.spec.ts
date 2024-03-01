@@ -120,7 +120,7 @@ describe('PartDetailComponent', () => {
     expect(attributeInputs[2].value).toBe(initialAttributes[0].value);
   })
 
-  it('should submit updated values', () => {
+  it('should submit updated values', async () => {
     const dispatchedSpy = spyOn(store, 'dispatch');
     const updatedPart: Part = { ...initialPart, name: 'Updated Name', category: PartCategory.Mechanical }    
     const nameInput: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=name]');
@@ -147,4 +147,39 @@ describe('PartDetailComponent', () => {
     expect(dispatchedSpy).toHaveBeenCalledWith(hideDetail());
   })
 
+  it('should add attribute', async () => {
+    // check initial state
+    const attributesDetailsElement: HTMLDetailsElement = fixture.nativeElement.querySelector('details');
+    const rows = attributesDetailsElement.querySelectorAll('tr');
+    expect(rows.length).toBe(2);  // nb. first row is header
+
+    const addAttributeButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[value=addAttribute]');
+    addAttributeButton.click();
+
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();  
+      const attributesDetailsElement: HTMLDetailsElement = fixture.nativeElement.querySelector('details');
+      const rows = attributesDetailsElement.querySelectorAll('tr');
+      expect(rows.length).toBe(3);  // nb. first row is header
+    });
+  })
+
+  it('should delete attribute', async () => {
+    // check initial state
+    const attributesDetailsElement: HTMLDetailsElement = fixture.nativeElement.querySelector('details');
+    const rows = attributesDetailsElement.querySelectorAll('tr');
+    expect(rows.length).toBe(2);  // nb. first row is header
+
+    const deleteAttributeButton = attributesDetailsElement.querySelector('button[value=deleteAttribute]') as HTMLButtonElement;
+    deleteAttributeButton.click();
+
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();  
+      const attributesDetailsElement: HTMLDetailsElement = fixture.nativeElement.querySelector('details');
+      const rows = attributesDetailsElement.querySelectorAll('tr');
+      expect(rows.length).toBe(0);  // nb. first row is header
+    });
+  })
 });

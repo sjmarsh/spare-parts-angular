@@ -5,6 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,7 +24,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
 @Component({
   selector: 'app-part-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatInputModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatIconModule, MatSelectModule, MatDialogModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTableModule, MatInputModule, MatFormFieldModule, MatCardModule, MatTooltipModule, MatButtonModule, MatIconModule, MatSelectModule, MatDialogModule],
   styleUrl: './part-detail.component.css',
   template: `
     <div class="part-detail">
@@ -73,7 +74,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
           <details>
           <summary>Attributes</summary>
           <mat-card class="attributes-card">
-            <button mat-icon-button aria-label="Add attribute" type="button" (click)="addAttribute()">
+            <button mat-icon-button aria-label="Add attribute" type="button" (click)="addAttribute()" value="addAttribute" matTooltip="Add Attribute">
               <mat-icon>add</mat-icon>
             </button>
             <div *ngIf="getAttributeFormArray().controls.length > 0">
@@ -99,7 +100,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
                 <ng-container matColumnDef="delete">
                   <th mat-header-cell *matHeaderCellDef></th>
                   <td mat-cell *matCellDef="let element">
-                    <button mat-flat-button type="button" (click)="deleteAttribute(element)">Delete</button>
+                    <button mat-flat-button type="button" (click)="deleteAttribute(element)" value="deleteAttribute">Delete</button>
                   </td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
