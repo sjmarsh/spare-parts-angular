@@ -4,16 +4,18 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
 import { PartDetailComponent } from './part-detail.component';
 import { PartDetailState } from '../store/parts.reducers';
+import { updatePart } from '../store/parts.actions';
 import Part from '../types/Part';
 import PartAttribute from '../types/PartAttribute';
 import DetailMode from '../../../constants/detailMode';
 import FetchStatus from '../../../constants/fetchStatus';
+import PartCategory from '../types/PartCategory';
 
 describe('PartDetailComponent', () => {
   let component: PartDetailComponent;
   let fixture: ComponentFixture<PartDetailComponent>;
   let store: MockStore;
-  
+    
   const initialAttributes = new Array<PartAttribute>(
     { name: 'Attribute1', description: 'The first attribute', value: 'Its a part attribute' } as PartAttribute
   )
@@ -22,6 +24,7 @@ describe('PartDetailComponent', () => {
     id: 1, 
     name: 'Part 1', 
     description: 'The first one', 
+    category: PartCategory.Software,
     weight: 1.1, 
     price: 10.1, 
     startDate: '2020-11-01', 
@@ -77,8 +80,9 @@ describe('PartDetailComponent', () => {
 
   it('should display category', () => {
     expect(component.part.category).toBe(initialPart.category);
-    const categoryInput = fixture.nativeElement.querySelector('mat-select[name=category]').querySelector('span').value;
-    expect(categoryInput).toBe(initialPart.category);
+    //const categoryInput = fixture.nativeElement.querySelector('mat-select[name=category]').querySelector('span').innerText;
+    const formCategoryValue = component.partForm?.controls['category'].value;
+    expect(formCategoryValue).toBe(initialPart.category);
   })
 
   it('should display weight', () => {
@@ -116,5 +120,22 @@ describe('PartDetailComponent', () => {
     expect(attributeInputs[2].value).toBe(initialAttributes[0].value);
   })
 
+  it('should submit updated values', () => {
+    const dispatchedSpy = spyOn(store, 'dispatch');
+    const updatedPart: Part = { ...initialPart, name: 'Updated Name', category: PartCategory.Mechanical }    
+    const nameInput: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=name]');
+    nameInput.value = updatedPart.name;
+    nameInput.dispatchEvent(new Event('input'));    
+    // using form controls to update becuase material selelct is messy
+    component.partForm?.controls['category'].setValue(updatedPart.category);
+
+    const submitButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[type=submit]');
+    submitButton.click();
+
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {  
+      expect(dispatchedSpy).toHaveBeenCalledWith(updatePart({part: updatedPart}));
+    });
+  })
 
 });
