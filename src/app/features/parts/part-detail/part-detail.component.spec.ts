@@ -4,7 +4,7 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
 import { PartDetailComponent } from './part-detail.component';
 import { PartDetailState } from '../store/parts.reducers';
-import { updatePart } from '../store/parts.actions';
+import { updatePart, hideDetail } from '../store/parts.actions';
 import Part from '../types/Part';
 import PartAttribute from '../types/PartAttribute';
 import DetailMode from '../../../constants/detailMode';
@@ -136,6 +136,15 @@ describe('PartDetailComponent', () => {
     fixture.whenStable().then(() => {  
       expect(dispatchedSpy).toHaveBeenCalledWith(updatePart({part: updatedPart}));
     });
+  })
+
+  it('should close', () => {
+    const dispatchedSpy = spyOn(store, 'dispatch');
+
+    const cancelButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[value=close]');
+    cancelButton.click();
+
+    expect(dispatchedSpy).toHaveBeenCalledWith(hideDetail());
   })
 
 });

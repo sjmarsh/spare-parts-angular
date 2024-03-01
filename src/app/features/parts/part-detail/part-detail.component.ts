@@ -113,7 +113,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
 
         
         <button mat-flat-button color="primary" type="submit">Submit</button>
-        <button mat-flat-button type="button" (click)="handleClose()">Close</button>
+        <button mat-flat-button type="button" (click)="handleClose()" value="close">Close</button>
 
         <mat-error>{{errorMessage}}</mat-error>
       </form> 
