@@ -67,4 +67,9 @@ export class PartService {
         return this.httpClient.delete<PartResponse>(deleteUrl, {headers: this.httpHeaders});
     }
 
+    fetchReport(): Observable<ArrayBuffer> {
+        const reportUrl = `${this.baseUrl}/report`;
+        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, responseType: "arraybuffer"});
+    }
+
 }

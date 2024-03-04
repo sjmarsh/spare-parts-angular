@@ -20,3 +20,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     margin-right: 10px;
 }
 
+.pdf-container {
+    height: 85vh;
+    width: 100%;
+}
+
+.pdf-view {
+    height: 100%;
+    width: 100%;
+}

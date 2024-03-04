@@ -14,8 +14,10 @@ import TableSettings from '../../../constants/tableSettings';
 import { MessageBoxModel, MessageBoxComponent } from '../../../components/message-box/message-box.component';
 import { PartDetailState } from '../store/parts.reducers';
 import { PartListState } from '../store/partsList.reducers';
+import { PartReportState } from '../store/partsReport.reducers';
 import { fetchParts, setCurrentPage } from '../store/partsList.actions';
 import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
+import { fetchReport } from '../store/partsReport.actions';
 
 @Component({
   selector: 'app-part-table',
@@ -24,7 +26,7 @@ import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
   template: `
     <div>
       <div class='tool-container'>
-        <button mat-fab extended color="primary" disabled class="tool-button" (click)="handleFetchReport()">
+        <button mat-fab extended color="primary" class="tool-button" (click)="handleFetchReport()">
           <mat-icon>print</mat-icon>
           Report
         </button>       
@@ -89,7 +91,7 @@ import { showDetail, deletePart, fetchPart } from '../store/parts.actions';
 })
 export class PartTableComponent {
 
-  constructor(public dialog: MatDialog, private partStore: Store<{parts: PartDetailState}>, private partListStore: Store<{partList: PartListState}>){
+  constructor(public dialog: MatDialog, private partStore: Store<{parts: PartDetailState}>, private partListStore: Store<{partList: PartListState}>, private partsReportStore: Store<{partsReportStore: PartReportState}>){
   }
 
   pageOfParts: Array<Part> = []
@@ -116,7 +118,7 @@ export class PartTableComponent {
   }
 
   handleFetchReport = () => {
-    // todo
+    this.partsReportStore.dispatch(fetchReport());
   }
 
   handleAddPart = () => {
