@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
@@ -182,4 +183,57 @@ describe('PartDetailComponent', () => {
       expect(rows.length).toBe(0);  // nb. first row is header
     });
   })
+
+  it('should have validation error for no name', async () => {
+    expect(component.partForm?.valid).toBeTrue();
+    
+    component.partForm?.patchValue({['name']: ''});
+
+    expect(component.partForm?.valid).toBeFalse();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const nameInputEl: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=name]');
+      expect(nameInputEl.classList.contains('ng-invalid')).toBeTrue();
+    });
+  })
+
+  it('should have validation error for weight less than zero', async () => {
+    expect(component.partForm?.valid).toBeTrue();
+    
+    component.partForm?.patchValue({['weight']: -0.1});
+
+    expect(component.partForm?.valid).toBeFalse();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const weightInputEl: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=weight]');
+      expect(weightInputEl.classList.contains('ng-invalid')).toBeTrue();
+    });
+  })
+
+  it('should have validation error for price less than zero', async () => {
+    expect(component.partForm?.valid).toBeTrue();
+    
+    component.partForm?.patchValue({['price']: -0.1});
+
+    expect(component.partForm?.valid).toBeFalse();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const priceInputEl: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=price]');
+      expect(priceInputEl.classList.contains('ng-invalid')).toBeTrue();
+    });
+  })
+
+  it('should have validation error for no start date', async () => {
+    expect(component.partForm?.valid).toBeTrue();
+    
+    component.partForm?.patchValue({['startDate']: ''});
+
+    expect(component.partForm?.valid).toBeFalse();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const dateInputEl: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName=startDate]');
+      expect(dateInputEl.classList.contains('ng-invalid')).toBeTrue();
+    });
+  })
+
 });
