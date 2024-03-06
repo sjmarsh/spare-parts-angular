@@ -40,6 +40,14 @@
             </a>
           </span>
         </a>
+        <a *ngIf="this.authirzationService?.userIsLoggedIn() && this.authirzationService?.userHasRequiredRoles([userRoles.Administrator, userRoles.StocktakeUser])" mat-list-item>
+          <span class="entry nav-item">
+            <a routerLink="/inventory" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
+              <mat-icon>inventory</mat-icon>
+              <span *ngIf="!isCollapsed"> Inventory</span>
+            </a>
+          </span>
+        </a>
       </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content>
