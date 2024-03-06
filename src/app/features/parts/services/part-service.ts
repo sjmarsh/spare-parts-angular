@@ -72,4 +72,9 @@ export class PartService {
         return this.httpClient.get(reportUrl, {headers: this.httpHeaders, responseType: "arraybuffer"});
     }
 
+    fetchCurrentParts = () : Observable<PartListReponse> => {
+        const fetchUrl = `${this.baseUrl}/index?isCurrentOnly=true`
+        return this.httpClient.get<PartListReponse>(fetchUrl, {headers: this.httpHeaders});
+    }
+
 }

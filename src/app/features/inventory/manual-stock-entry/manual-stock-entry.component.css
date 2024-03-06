@@ -1,0 +1,16 @@
+.manual-stock-entry{
+    margin: 20px;
+}
+
+.stock-entry-card {
+    display: flex; 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.stock-entry-field {
+    width: 30em;
+    margin-right: 5px;
+}

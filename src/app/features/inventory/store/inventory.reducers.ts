@@ -1,0 +1,49 @@
+import { createReducer, on } from "@ngrx/store";
+
+import FetchStatus from "../../../constants/fetchStatus";
+import Part from "../../parts/types/Part";
+import InventoryItem from "../types/InventoryItem";
+import InventoryTab from "../types/inventoryTab";
+import { 
+    createInventoryItem, createInventoryItemSuccess, createInventoryItemFail, 
+    fetchCurrentParts, fetchCurrentPartsSuccess, fetchCurrentPartsFail } from "./inventory.actions";
+
+
+export interface InventoryState {
+    items: Array<InventoryItem>;
+    totalItemCount: number;
+    currentParts: Array<Part>;
+    currentTab: InventoryTab;
+    currentStockPage: number;
+    historyStockPage: number;
+    status: FetchStatus;
+    error?: string | null;
+};
+
+export interface InventoryFetchOptions {
+    isCurrent: boolean;
+    page: number;
+    takeAll: boolean;
+}
+
+const initialState: InventoryState = {
+    
+    items: [],
+    totalItemCount: 0,
+    currentParts: [],
+    currentTab: InventoryTab.Entry,
+    currentStockPage: 1,
+    historyStockPage: 1,
+    status: FetchStatus.Idle,
+    error: null
+};
+
+export const inventoryReducer = createReducer(
+    initialState,
+    on(createInventoryItem, (state) => ({...state, status: FetchStatus.Loading})),
+    on(createInventoryItemSuccess, (state, {response}) => ({...state, status: response.hasError ? FetchStatus.Failed : FetchStatus.Succeeded, error: response.message })),
+    on(createInventoryItemFail, (state, {response}) => ({...state, status: FetchStatus.Failed, error: response ? response.message : 'Failed to create item'})),
+    on(fetchCurrentParts, (state) => ({...state, status: FetchStatus.Loading})),
+    on(fetchCurrentPartsSuccess, (state, {response}) => ({...state, status: response.hasError ? FetchStatus.Failed : FetchStatus.Succeeded, error: response.message, currentParts: response.items})),
+    on(fetchCurrentPartsFail, (state, {response}) => ({...state, status: FetchStatus.Failed, error: response.message}))
+);

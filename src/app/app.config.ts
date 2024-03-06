@@ -17,6 +17,8 @@ import { partReducer } from './features/parts/store/parts.reducers';
 import { PartsEffects } from './features/parts/store/parts.effects';
 import { partsReportReducer } from './features/parts/store/partsReport.reducers';
 import { PartsReportEffects } from './features/parts/store/partsReport.effects';
+import { inventoryReducer } from './features/inventory/store/inventory.reducers';
+import { InventoryEffects } from './features/inventory/store/inventory.effects';
 
 export interface AppConfig {
   serverUrl?: string;
@@ -37,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(), 
     provideAnimations(),
     
-    provideStore({login: authReducer, partList: partListReducer,  parts: partReducer, partsReport: partsReportReducer}),
-    provideEffects([AuthEffects, PartsListEffects, PartsEffects, PartsReportEffects])
+    provideStore({login: authReducer, partList: partListReducer,  parts: partReducer, partsReport: partsReportReducer, inventory: inventoryReducer}),
+    provideEffects([AuthEffects, PartsListEffects, PartsEffects, PartsReportEffects, InventoryEffects])
   ]
 };
