@@ -42,4 +42,9 @@ export class InventoryService {
         let skipQuery = options.takeAll ? "" : `skip=${skip}&take=${TableSettings.PageSize}`;
         return this.httpClient.get<InventoryItemListResponse>(`${this.baseUrl}/index-detail?${current}${skipQuery}`,  {headers: this.httpHeaders});
     }
+
+    fetchReport = (isCurrent: boolean) : Observable<ArrayBuffer> => {
+        const reportUrl = `${this.baseUrl}/report?isCurrentOnly=${isCurrent}`;
+        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, responseType: "arraybuffer"});
+    }
 }

@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -7,19 +9,27 @@ import { Store } from '@ngrx/store';
 
 import InventoryItem from '../types/InventoryItem';
 import { InventoryState } from '../store/inventory.reducers';
+import { InventoryReportState } from '../store/inventoryReport.reducers';
 import { fetchInventory } from '../store/inventory.actions';
 import TableSettings from '../../../constants/tableSettings';
+import { fetchReport } from '../store/inventoryReport.actions';
 
 @Component({
     selector: 'app-inventory-table',
     standalone: true,
-    imports: [CommonModule, MatTableModule, MatPaginatorModule, MatProgressBarModule],
+    imports: [CommonModule, MatButtonModule, MatIconModule, MatTableModule, MatPaginatorModule, MatProgressBarModule],
     styleUrl: './inventory-table.component.css',
     template: `
         <div>
             <ng-container *ngIf="isLoading">
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
             </ng-container>
+            <div class='tool-container'>
+                <button mat-fab extended color="primary" class="tool-button" (click)="handleFetchReport()">
+                <mat-icon>print</mat-icon>
+                Report
+                </button>  
+            </div>
             <table mat-table [dataSource]="pageOfInventory">
                 <ng-container matColumnDef="partName">
                   <th mat-header-cell *matHeaderCellDef>Part Name</th>
@@ -62,7 +72,7 @@ export class InventoryTableComponent {
     errorMessage: string = ''
     displayedColumns: string[] = ['partName', 'quantity', 'dateRecorded']
 
-    constructor(private store: Store<{inventory: InventoryState}>) {
+    constructor(private store: Store<{inventory: InventoryState}>, private reportStore: Store<{inventoryReport: InventoryReportState}>) {
     }
 
     @Input() isCurrent: boolean = false
@@ -83,16 +93,6 @@ export class InventoryTableComponent {
         }
     } 
 
-    handlePageEvent = (e: PageEvent) => {
-        if(this.isCurrent) {
-            this.currentStockPage = e.pageIndex;
-        }
-        else {
-            this.historyStockPage = e.pageIndex;
-        }
-        this.fetchInventoryData();
-    }
-
     fetchInventoryData = () => {
         this.isLoading = true;
         if(this.isCurrent) {
@@ -104,4 +104,18 @@ export class InventoryTableComponent {
             this.currentPage = this.historyStockPage;
         }
     }
+
+    handlePageEvent = (e: PageEvent) => {
+        if(this.isCurrent) {
+            this.currentStockPage = e.pageIndex;
+        }
+        else {
+            this.historyStockPage = e.pageIndex;
+        }
+        this.fetchInventoryData();
+    }
+
+    handleFetchReport = () => {
+        this.reportStore.dispatch(fetchReport({isCurrent: this.isCurrent}));
+    }    
 }

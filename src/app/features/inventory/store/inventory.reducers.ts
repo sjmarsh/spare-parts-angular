@@ -10,7 +10,6 @@ import {
     fetchCurrentParts, fetchCurrentPartsSuccess, fetchCurrentPartsFail, 
     fetchInventory, fetchInventorySuccess, fetchInventoryFail } from "./inventory.actions";
 
-
 export interface InventoryState {
     items: Array<InventoryItem>;
     totalItemCount: number;
