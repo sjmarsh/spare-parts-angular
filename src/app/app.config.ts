@@ -1,5 +1,5 @@
 import { ApplicationConfig, InjectionToken } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -36,7 +36,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
 
     { provide: APP_CONFIG, useValue: APP_CONFIG_DI },
-    provideHttpClient(),
+    provideHttpClient(withFetch()),
     provideRouter(routes), 
     provideClientHydration(), 
     provideAnimations(),
