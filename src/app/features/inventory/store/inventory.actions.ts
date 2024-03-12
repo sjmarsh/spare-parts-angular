@@ -1,9 +1,12 @@
 import { createAction , props} from '@ngrx/store'
 import { InventoryFetchOptions } from './inventory.reducers'
+import InventoryTab from '../types/inventoryTab'
 import InventoryItemListResponse from '../types/InventoryItemListResponse'
 import InventoryItem from '../types/InventoryItem'
 import InventoryItemResponse from '../types/InventoryItemResponse'
 import PartListReponse from '../../parts/types/PartListResponse'
+
+export const setCurrentInventoryTab = createAction('[INVENTORY] Set Current Tab', props<{tab: InventoryTab}>())
 
 export const fetchInventory = createAction('[INVENTORY] Fetch Inventory', props<{options: InventoryFetchOptions}>())
 export const fetchInventorySuccess = createAction('[INVENTORY] Fetch Inventory Success', props<{response: InventoryItemListResponse}>())

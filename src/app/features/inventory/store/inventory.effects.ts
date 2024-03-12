@@ -5,7 +5,8 @@ import { switchMap, map, catchError } from 'rxjs';
 import { InventoryService } from '../services/inventory-service';
 import {
     createInventoryItem, createInventoryItemSuccess, createInventoryItemFail, 
-    fetchCurrentParts, fetchCurrentPartsSuccess, fetchCurrentPartsFail } from './inventory.actions';
+    fetchCurrentParts, fetchCurrentPartsSuccess, fetchCurrentPartsFail,
+    fetchInventory, fetchInventorySuccess, fetchInventoryFail } from './inventory.actions';
 import { PartService } from '../../parts/services/part-service';
 
 
@@ -14,12 +15,6 @@ export class InventoryEffects {
 
     constructor(private actions$: Actions, private inventoryService: InventoryService, private partService: PartService) {  
     }
-/**ofType(createInventoryItem),
-        switchMap({item}) => this.inventoryService.createInventoryItem(item).pipe(
-            map(response => createInventoryItemSuccess({response})),
-            catchError((response) => [createInventoryItemFail(response)])
-        ) */
-
 
     createInventoryItem$ = createEffect(() => this.actions$.pipe(
         ofType(createInventoryItem),
@@ -34,6 +29,14 @@ export class InventoryEffects {
         switchMap(() => this.partService.fetchCurrentParts().pipe(
             map(response => fetchCurrentPartsSuccess({response})),
             catchError((response) => [fetchCurrentPartsFail({response})])
+        ))
+    ))
+
+    fetchInventory$ = createEffect(() => this.actions$.pipe(
+        ofType(fetchInventory),
+        switchMap(({options}) => this.inventoryService.fetchInventory(options).pipe(
+            map(response => fetchInventorySuccess({response})),
+            catchError((response) => [fetchInventoryFail({response})])
         ))
     ))
 }

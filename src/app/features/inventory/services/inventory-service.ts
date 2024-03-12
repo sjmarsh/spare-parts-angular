@@ -7,6 +7,9 @@ import { APP_CONFIG, AppConfig } from "../../../app.config";
 import { AuthState } from "../../auth/store/auth.reducers";
 import InventoryItem from "../types/InventoryItem";
 import InventoryItemResponse from "../types/InventoryItemResponse";
+import InventoryItemListResponse from "../types/InventoryItemListResponse";
+import { InventoryFetchOptions } from "../store/inventory.reducers";
+import TableSettings from "../../../constants/tableSettings";
 
 @Injectable({
     providedIn: 'root'
@@ -31,5 +34,12 @@ export class InventoryService {
             return of({ hasError: true, message: 'Cannot create null Inventory Item.' } as InventoryItemResponse);
         }
         return this.httpClient.post<InventoryItemResponse>(this.baseUrl, item, {headers: this.httpHeaders});
+    }
+
+    fetchInventory = (options: InventoryFetchOptions) : Observable<InventoryItemListResponse> => {
+        let current = options.isCurrent ? "isCurrentOnly=true&" : "";
+        let skip = (options.page == 0) ? 0 : options.page * TableSettings.PageSize;  
+        let skipQuery = options.takeAll ? "" : `skip=${skip}&take=${TableSettings.PageSize}`;
+        return this.httpClient.get<InventoryItemListResponse>(`${this.baseUrl}/index-detail?${current}${skipQuery}`,  {headers: this.httpHeaders});
     }
 }
