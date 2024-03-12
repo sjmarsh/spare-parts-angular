@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTable } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Store } from '@ngrx/store';
 
 import InventoryItem from '../types/InventoryItem';
@@ -12,10 +13,13 @@ import TableSettings from '../../../constants/tableSettings';
 @Component({
     selector: 'app-inventory-table',
     standalone: true,
-    imports: [CommonModule, MatTableModule, MatPaginatorModule],
+    imports: [CommonModule, MatTableModule, MatPaginatorModule, MatProgressBarModule],
     styleUrl: './inventory-table.component.css',
     template: `
         <div>
+            <ng-container *ngIf="isLoading">
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </ng-container>
             <table mat-table [dataSource]="pageOfInventory">
                 <ng-container matColumnDef="partName">
                   <th mat-header-cell *matHeaderCellDef>Part Name</th>
@@ -41,11 +45,13 @@ import TableSettings from '../../../constants/tableSettings';
                 aria-label="Select parts list page"
             >
             </mat-paginator>
+            <p class="custom-error">{{errorMessage}}<p>
         </div>
     `
 })
 
 export class InventoryTableComponent {
+    isLoading: boolean = false;
     isFirstInit: boolean = true;
     pageOfInventory: Array<InventoryItem> = []
     totalItemCount: number = 0
@@ -67,7 +73,8 @@ export class InventoryTableComponent {
             this.totalItemCount = s.totalItemCount;
             this.currentStockPage = s.currentStockPage;
             this.historyStockPage = s.historyStockPage;
-            this.errorMessage = s.error ?? 'Failed to fetch Inventory';    
+            this.errorMessage = s.error ?? '';
+            this.isLoading = false;    
         })
         
         if(this.isFirstInit) {
@@ -87,6 +94,7 @@ export class InventoryTableComponent {
     }
 
     fetchInventoryData = () => {
+        this.isLoading = true;
         if(this.isCurrent) {
             this.store.dispatch(fetchInventory({options: { isCurrent: true, page: this.currentStockPage, takeAll: false}}));
             this.currentPage = this.currentStockPage;
