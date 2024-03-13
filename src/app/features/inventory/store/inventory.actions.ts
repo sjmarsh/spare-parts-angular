@@ -19,3 +19,7 @@ export const createInventoryItemFail = createAction('[INVENTORY] Create Inventor
 export const fetchCurrentParts = createAction('[INVENTORY] Fetch Current Parts')
 export const fetchCurrentPartsSuccess = createAction('[INVENTORY] Fetch Current Parts Success', props<{response: PartListReponse}>())
 export const fetchCurrentPartsFail = createAction('[INVENTORY] Fetch Current Parts Fail', props<{response: PartListReponse}>())
+
+export const createInventoryItemList = createAction('[IVENTORY] Create Inventory Item List', props<{items: Array<InventoryItem>}>())
+export const createInventoryItemListSuccess = createAction('[IVENTORY] Create Inventory Item List Success', props<{response: InventoryItemListResponse}>())
+export const createInventoryItemListFail = createAction('[IVENTORY] Create Inventory Item List Fail', props<{response: InventoryItemListResponse}>())

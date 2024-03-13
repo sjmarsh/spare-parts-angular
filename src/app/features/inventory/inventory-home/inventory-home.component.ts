@@ -4,6 +4,7 @@ import { MatTabsModule, MatTabChangeEvent } from '@angular/material/tabs';
 import { Store } from '@ngrx/store';
 
 import { ManualStockEntryComponent } from '../manual-stock-entry/manual-stock-entry.component';
+import { StocktakeComponent } from '../stocktake/stocktake.component';
 import { InventoryTableComponent } from '../inventory-table/inventory-table.component';
 import { InventoryState } from '../store/inventory.reducers';
 import InventoryTab from '../types/inventoryTab';
@@ -12,14 +13,20 @@ import { setCurrentInventoryTab } from '../store/inventory.actions';
 @Component({
     selector: 'app-inventory-home',
     standalone: true,
-    imports: [CommonModule, MatTabsModule, ManualStockEntryComponent, InventoryTableComponent],
+    imports: [CommonModule, MatTabsModule, ManualStockEntryComponent, StocktakeComponent, InventoryTableComponent],
     styleUrl: './inventory-home.component.css',
     template: `
         <div class="inventory-home">
             <h2>Inventory</h2>
             <mat-tab-group animationDuration="1000ms" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChanged($event);">
-                <mat-tab label="Manual Stock Entry"> <app-manual-stock-entry></app-manual-stock-entry></mat-tab>
-                <mat-tab label="Stocktake"><p>Stocktake</p></mat-tab>
+                <mat-tab label="Manual Stock Entry">
+                    <app-manual-stock-entry></app-manual-stock-entry>
+                </mat-tab>
+                <mat-tab label="Stocktake">
+                    <ng-template matTabContent>
+                        <app-stocktake></app-stocktake>
+                    </ng-template>
+                </mat-tab>
                 <mat-tab label="Current Stock">
                     <ng-template matTabContent>
                         <app-inventory-table id="current" [isCurrent]="true"></app-inventory-table>

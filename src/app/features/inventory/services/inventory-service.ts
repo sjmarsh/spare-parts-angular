@@ -36,6 +36,14 @@ export class InventoryService {
         return this.httpClient.post<InventoryItemResponse>(this.baseUrl, item, {headers: this.httpHeaders});
     }
 
+    createInventoryItemList = (items: InventoryItem[]) : Observable<InventoryItemListResponse> => {
+        if(!items || items.length === 0){
+            console.log("Can't create null inventory items");
+            return of({ hasError: true, message: 'Cannot create null Inventory Item.' } as InventoryItemListResponse);
+        }
+        return this.httpClient.post<InventoryItemListResponse>(`${this.baseUrl}/post-list`, items, {headers: this.httpHeaders});
+    }
+
     fetchInventory = (options: InventoryFetchOptions) : Observable<InventoryItemListResponse> => {
         let current = options.isCurrent ? "isCurrentOnly=true&" : "";
         let skip = (options.page == 0) ? 0 : options.page * TableSettings.PageSize;  
