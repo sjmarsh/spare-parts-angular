@@ -30,7 +30,7 @@ import { fetchReport } from '../store/partsReport.actions';
           <mat-icon>print</mat-icon>
           Report
         </button>       
-        <button mat-fab extended color="primary" class="tool-button" (click)="handleAddPart()">
+        <button mat-fab extended color="primary" class="tool-button" value="add" (click)="handleAddPart()">
           <mat-icon>add</mat-icon>
           Add Part
         </button>
@@ -66,11 +66,11 @@ import { fetchReport } from '../store/partsReport.actions';
         </ng-container>
         <ng-container matColumnDef="edit">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row"><button mat-flat-button (click)="handleEdit(row)">Edit</button></td>
+          <td mat-cell *matCellDef="let row"><button mat-flat-button value="edit" (click)="handleEdit(row)">Edit</button></td>
         </ng-container>
         <ng-container matColumnDef="delete">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row"><button mat-flat-button (click)="handleDelete(row)">Delete</button></td>
+          <td mat-cell *matCellDef="let row"><button mat-flat-button value="delete" (click)="handleDelete(row)">Delete</button></td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -103,13 +103,13 @@ export class PartTableComponent {
 
   ngOnInit(): void {
     this.partListStore.select(state => state.partList).subscribe(p => {
-      if(p.status === FetchStatus.Idle && p.items.length === 0) {
-        this.partStore.dispatch(fetchParts({page: this.currentPage}));
+      if(p && p.status === FetchStatus.Idle && p.items.length === 0) {
+        this.partListStore.dispatch(fetchParts({page: this.currentPage}));
       }
-      if(p.status === FetchStatus.Failed) {
+      if(p && p.status === FetchStatus.Failed) {
         this.errorMessage = p.error ?? 'Failed to fetch parts'
       }
-      if(p.status === FetchStatus.Succeeded) {
+      if(p && p.status === FetchStatus.Succeeded) {
         this.pageOfParts = p.items;
         this.totalItemCount = p.totalItemCount;
         this.currentPage = p.currentPage ?? 0;
