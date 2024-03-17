@@ -1,8 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { HarnessLoader } from '@angular/cdk/testing';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogHarness } from '@angular/material/dialog/testing';
+import { MatButtonHarness } from "@angular/material/button/testing";
+import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
 import { PartTableComponent } from './part-table.component';
+import { MessageBoxComponent } from '../../../components/message-box/message-box.component';
 import { PartDetailState } from '../store/parts.reducers';
 import { PartListState } from '../store/partsList.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
@@ -10,12 +17,15 @@ import Part from '../types/Part';
 import PartCategory from '../types/PartCategory';
 import DetailMode from '../../../constants/detailMode';
 import { deletePart, fetchPart, showDetail } from '../store/parts.actions';
+import { fetchReport } from '../store/partsReport.actions';
 
 
 describe('PartTableComponent', () => {
   let component: PartTableComponent;
   let fixture: ComponentFixture<PartTableComponent>;
   let store: MockStore;
+  let rootLoader: HarnessLoader;
+  let overlayContainer: OverlayContainer;
 
   const partList = [
     { id: 1, name: "Part1", description: "The first one", category: PartCategory.Mechanical, weight: 1.1, price: 1.11, startDate: '2010-01-11' } as Part,
@@ -42,12 +52,16 @@ describe('PartTableComponent', () => {
       status: FetchStatus.Succeeded,
       error: ""
     } as PartDetailState
-  }
+  } 
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PartTableComponent],
-      providers: [provideAnimations(), provideMockStore({ initialState: initialPartDetailState }), provideMockStore({ initialState: initialPartListState })]
+      imports: [PartTableComponent, BrowserAnimationsModule, MatDialogModule, MessageBoxComponent],
+      providers: [
+        provideAnimations(), 
+        provideMockStore({ initialState: initialPartDetailState }),
+        provideMockStore({ initialState: initialPartListState })
+      ]
     })
     .compileComponents();
 
@@ -55,6 +69,16 @@ describe('PartTableComponent', () => {
     fixture = TestBed.createComponent(PartTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+    overlayContainer = TestBed.inject(OverlayContainer)
+  });
+
+  afterEach(async () => {
+    const dialogs = await rootLoader.getAllHarnesses(MatDialogHarness);
+
+    await Promise.all(dialogs.map(async (d: MatDialogHarness) => await d.close()));
+    overlayContainer.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -104,8 +128,7 @@ describe('PartTableComponent', () => {
 
     expect(dispatchedSpy).toHaveBeenCalledWith(showDetail({mode: DetailMode.Add}));
   });
-  
-  
+    
   it('should edit part', () => {
     const dispatchedSpy = spyOn(store, 'dispatch');
 
@@ -114,20 +137,50 @@ describe('PartTableComponent', () => {
 
     expect(dispatchedSpy).toHaveBeenCalledWith(fetchPart({partId: partList[0].id}));
   });
-  
-  
-  it('should delete part', () => {
+    
+  it('should delete part', async () => {
     const dispatchedSpy = spyOn(store, 'dispatch');
 
     const deleteButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[value=delete]');
     deleteButton.click();
-// TODO - currently fails because a confirmation dialog is displayed before delete. Update test to cover this with both scenarios.
-    expect(dispatchedSpy).toHaveBeenCalledWith(deletePart({partId: partList[0].id}));
+    
+    // confirm deletion in dialog
+    let dialogs = await rootLoader.getAllHarnesses(MatDialogHarness);
+    expect(dialogs.length).toEqual(1);
+    const yesButton = await rootLoader.getHarness(
+      MatButtonHarness.with({selector: "button[value=yes]"})
+    );
+    expect(yesButton).toBeTruthy();
+    await yesButton.click();
+      
+    expect(dispatchedSpy).toHaveBeenCalledWith(deletePart({partId: partList[0].id}));  
+  });
+
+  it('should cancel delete part', async () => {
+    const dispatchedSpy = spyOn(store, 'dispatch');
+
+    const deleteButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[value=delete]');
+    deleteButton.click();
+    
+    // reject deletion in dialog
+    let dialogs = await rootLoader.getAllHarnesses(MatDialogHarness);
+    expect(dialogs.length).toEqual(1);
+    const noButton = await rootLoader.getHarness(
+      MatButtonHarness.with({selector: "button[value=no]"})
+    );
+    expect(noButton).toBeTruthy();
+    await noButton.click();
+      
+    expect(dispatchedSpy).not.toHaveBeenCalledWith(deletePart({partId: partList[0].id})); 
+  })
+    
+  it('should fetch report', () => {
+    const dispatchedSpy = spyOn(store, 'dispatch');
+
+    const reportButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[value=report]');
+    reportButton.click();
+
+    expect(dispatchedSpy).toHaveBeenCalledWith(fetchReport());
   });
   
-  /*
-  it('should fetch report', () => {
-    expect(true).toBeFalse();
-  });
-  */
 });

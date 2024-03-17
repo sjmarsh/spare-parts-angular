@@ -17,8 +17,8 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
 
     <div mat-dialog-actions>
-      <button mat-button (click)="onDismiss()">No</button>
-      <button mat-raised-button color="primary" (click)="onConfirm()">Yes</button>
+      <button mat-button value="no" (click)="onDismiss()">No</button>
+      <button mat-raised-button color="primary" value="yes" (click)="onConfirm()">Yes</button>
     </div>
   `,
   styleUrl: './message-box.component.css'

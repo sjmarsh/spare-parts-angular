@@ -26,7 +26,7 @@ import { fetchReport } from '../store/partsReport.actions';
   template: `
     <div>
       <div class='tool-container'>
-        <button mat-fab extended color="primary" class="tool-button" (click)="handleFetchReport()">
+        <button mat-fab extended color="primary" class="tool-button" value="report" (click)="handleFetchReport()">
           <mat-icon>print</mat-icon>
           Report
         </button>       
