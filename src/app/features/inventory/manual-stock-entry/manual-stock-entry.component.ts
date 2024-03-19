@@ -31,7 +31,7 @@ import { createInventoryItem, fetchCurrentParts } from '../store/inventory.actio
                 <mat-card class="stock-entry-card">
                     <mat-form-field class="stock-entry-field">
                         <mat-label>Select Part</mat-label>
-                        <mat-select name="partId" formControlName="partId">
+                        <mat-select name="partID" formControlName="partID">
                             <mat-option *ngFor="let part of currentParts" [value]="part.id">{{part.name}}</mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -95,7 +95,7 @@ export class ManualStockEntryComponent {
     initForm = (item: InventoryItem): FormGroup => {
         return new FormGroup({
             id: new FormControl(item.id),
-            partId: new FormControl(item.partID),
+            partID: new FormControl(item.partID),
             partName: new FormControl(item.partName),
             quantity: new FormControl(item.quantity),
             dateRecorded: new FormControl(item.dateRecorded)
