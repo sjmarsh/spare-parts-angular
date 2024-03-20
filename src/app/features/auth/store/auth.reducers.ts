@@ -57,7 +57,7 @@ export const authReducer = createReducer(
         fetchStatus: FetchStatus.Succeeded,
         isAuthenticated: response?.isAuthenticated ?? false,
         accessToken: response?.accessToken,
-        roles: getTokenDetails(response.accessToken).Roles
+        roles: getTokenDetails(response?.accessToken).Roles
     })),
     on(performTokenRefreshFail, (state, {response}) => ({
         ...state,
@@ -65,6 +65,6 @@ export const authReducer = createReducer(
         isAuthenticated: false,
         accessToken: null,
         roles: null,
-        error: response.message
+        error: response?.message
     }))
 )

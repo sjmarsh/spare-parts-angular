@@ -23,8 +23,8 @@ export class AuthenticationInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         console.log('interceptor')
         
-        if (req.url.includes("user/authenticate")) {
-            console.log("POST INTERCEPT Login: ", req.url);
+        if (req.url.includes("user/authenticate") || req.url.includes('user/refresh')) {
+            console.log("POST INTERCEPT authenticate/refresh: ", req.url);
             return next.handle(req);
         }
 
@@ -34,7 +34,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
             this.hasExpired = getTokenDetails(this.token).HasExpired;       
             if(this.hasExpired) {
                 console.log('Token has expired');
-                this.store.dispatch(performTokenRefresh()); 
+                this.store.dispatch(performTokenRefresh());
             }
         })
         
