@@ -13,7 +13,7 @@ import { InventoryState } from '../store/inventory.reducers';
 import Part from '../../parts/types/Part';
 import FetchStatus from '../../../constants/fetchStatus';
 import InventoryItem from '../types/InventoryItem';
-import { getLocalDateTimeString } from '../../../infrastructure/dateTime';
+import { DateTimeHelper } from '../../../infrastructure/dateTime';
 import { createInventoryItem, fetchCurrentParts } from '../store/inventory.actions';
 
 @Component({
@@ -60,14 +60,14 @@ export class ManualStockEntryComponent {
         partID: 0,
         partName: '',
         quantity: 0,
-        dateRecorded: getLocalDateTimeString()
+        dateRecorded: this.dateTime.getLocalDateTimeString()
     } 
     isLoading: Boolean = false
     hasSubmitted: Boolean = false
     statusMessage?: String
     errorMessage?: String
 
-    constructor(private store: Store<{inventory: InventoryState}>){
+    constructor(private store: Store<{inventory: InventoryState}>, private dateTime: DateTimeHelper){
     }
 
     ngOnInit(): void {

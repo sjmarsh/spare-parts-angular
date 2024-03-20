@@ -11,7 +11,7 @@ import InventoryItem from '../types/InventoryItem';
 import FetchStatus from '../../../constants/fetchStatus';
 import { InventoryState, selectInventoryStatus, selectStocktakeItems } from '../store/inventory.reducers';
 import { createInventoryItemList, fetchInventory } from '../store/inventory.actions';
-import { getLocalDateTimeString } from '../../../infrastructure/dateTime';
+import { DateTimeHelper } from '../../../infrastructure/dateTime';
 
 @Component({
     selector: 'app-stocktake',
@@ -26,13 +26,13 @@ import { getLocalDateTimeString } from '../../../infrastructure/dateTime';
                         <ng-container matColumnDef="partName">
                         <th mat-header-cell *matHeaderCellDef>Part Name</th>
                         <td mat-cell *matCellDef="let element">
-                            <input [formControl]="element.get('partName')">
+                            {{element.get('partName').value}}
                         </td>
                         </ng-container>
                         <ng-container matColumnDef="quantity">
                         <th mat-header-cell *matHeaderCellDef>Quantity</th>
                         <td mat-cell *matCellDef="let element">
-                            <input [formControl]="element.get('quantity')">
+                            <input matInput type="number" [formControl]="element.get('quantity')">
                         </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -51,7 +51,7 @@ export class StocktakeComponent {
     displayedColumns: string[] = ['partName', 'quantity']
     errorMessage: string = ''
 
-    constructor(private store: Store<{inventory: InventoryState}>) {
+    constructor(private store: Store<{inventory: InventoryState}>, private dateTime: DateTimeHelper) {
     }
 
     ngOnInit(): void {
@@ -70,7 +70,7 @@ export class StocktakeComponent {
         if(items && items.length > 0) {
             items.forEach(item => {
                 itemArray.push(new FormGroup({
-                    partId: new FormControl(item.partID),
+                    partID: new FormControl(item.partID),
                     partName: new FormControl(item.partName),
                     quantity: new FormControl(item.quantity)
                 }))
@@ -103,7 +103,7 @@ export class StocktakeComponent {
         if(itemFormArray) {
             const formItems = itemFormArray.value as Array<StocktakeItem>;
             if(formItems) {
-                let datedItems = formItems.map(i => ({...i, id: 0, dateRecorded: getLocalDateTimeString()} as InventoryItem));
+                let datedItems = formItems.map(i => ({...i, id: 0, dateRecorded: this.dateTime.getLocalDateTimeString()} as InventoryItem));
                 this.store.dispatch(createInventoryItemList({items: datedItems}))    
             }                        
         }

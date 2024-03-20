@@ -11,6 +11,8 @@ import { ManualStockEntryComponent } from './manual-stock-entry.component';
 import { InventoryState } from '../store/inventory.reducers';
 import Part from '../../parts/types/Part';
 import FetchStatus from '../../../constants/fetchStatus';
+import { DateTimeHelper } from '../../../infrastructure/dateTime';
+import { createInventoryItem } from '../store/inventory.actions';
 
 describe('ManualStockEntryComponent', () => {
     let component: ManualStockEntryComponent;
@@ -18,6 +20,7 @@ describe('ManualStockEntryComponent', () => {
     let store: MockStore;
     let loader: HarnessLoader;
     let overlayContainer: OverlayContainer;
+    let dateTimeSpy: jasmine.SpyObj<DateTimeHelper>;
 
     const currentParts = [ 
       { id: 1, name: 'Part1', description: 'The first one', weight: 1.1, price: 1.11, startDate: '2001-01-01' } as Part,
@@ -31,14 +34,19 @@ describe('ManualStockEntryComponent', () => {
         } as InventoryState
     }
 
+    const dateRecordedStubValue = '2000-02-02';
+
     beforeEach(async () => {
+        const dateSpy = jasmine.createSpyObj('DateTimeHelper', ['getLocalDateTimeString'])
         await TestBed.configureTestingModule({
           imports: [ManualStockEntryComponent],
-          providers: [provideAnimations(), provideMockStore({ initialState })]
+          providers: [provideAnimations(), provideMockStore({ initialState }), { provide: DateTimeHelper, useValue: dateSpy}]
         })
         .compileComponents();
         
         store = TestBed.inject(MockStore);
+        dateTimeSpy = TestBed.inject(DateTimeHelper) as jasmine.SpyObj<DateTimeHelper>;
+        dateTimeSpy.getLocalDateTimeString.and.returnValue(dateRecordedStubValue);
         fixture = TestBed.createComponent(ManualStockEntryComponent);
         component = fixture.componentInstance;
         loader = TestbedHarnessEnvironment.loader(fixture);
@@ -83,15 +91,15 @@ describe('ManualStockEntryComponent', () => {
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {  
-          expect(dispatchedSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-            item: jasmine.objectContaining({
+          expect(dispatchedSpy).toHaveBeenCalledWith(createInventoryItem({
+            item: {
               id: 0,
               partID: 2,
               partName: '',
-              quantity: 2  // ignore dateAdded (TODO - inject date helper as service so it can be substituted in test)
-            })
+              quantity: 2, 
+              dateRecorded: dateRecordedStubValue
+            }
           }));
         });
-
       });
 });  
