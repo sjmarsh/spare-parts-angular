@@ -2,7 +2,8 @@ import { createReducer, on } from "@ngrx/store";
 
 import FetchStatus from "../../../constants/fetchStatus";
 import { getTokenDetails } from '../services/jwtHelpers';
-import { login, loginSuccess, loginFail, logout } from './auth.actions';
+import { login, loginSuccess, loginFail, logout,
+        performTokenRefresh, performTokenRefreshSuccess, performTokenRefreshFail } from './auth.actions';
 
 export interface AuthState {
     accessToken: string | null;
@@ -46,5 +47,24 @@ export const authReducer = createReducer(
         accessToken: null,
         isAuthenticated: false,
         roles: null
+    })),
+    on(performTokenRefresh, (state) => ({
+        ...state,
+        fetchStatus: FetchStatus.Loading
+    })),
+    on(performTokenRefreshSuccess, (state, {response}) => ({
+        ...state,
+        fetchStatus: FetchStatus.Succeeded,
+        isAuthenticated: response?.isAuthenticated ?? false,
+        accessToken: response?.accessToken,
+        roles: getTokenDetails(response.accessToken).Roles
+    })),
+    on(performTokenRefreshFail, (state, {response}) => ({
+        ...state,
+        fetchStatus: FetchStatus.Failed,
+        isAuthenticated: false,
+        accessToken: null,
+        roles: null,
+        error: response.message
     }))
 )

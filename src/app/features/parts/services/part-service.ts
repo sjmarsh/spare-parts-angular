@@ -21,10 +21,10 @@ export class PartService {
 
     constructor(@Inject(APP_CONFIG) private appConfig: AppConfig, private httpClient: HttpClient, private store: Store<{login: AuthState}>, private partListStore: Store<{partList: PartListState}>) {
         this.baseUrl = `${this.appConfig.serverUrl}/api/part`;
-        this.store.select(state => state.login).subscribe(s => {
-            const token = s.accessToken ?? '';
-            this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
-        })
+        // this.store.select(state => state.login).subscribe(s => {
+        //     const token = s.accessToken ?? '';
+        //     this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
+        // })
         this.partListStore.select(state => state.partList).subscribe(s => {
             this.currentPage = s.currentPage;
         })

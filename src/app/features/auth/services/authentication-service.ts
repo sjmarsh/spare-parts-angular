@@ -13,6 +13,9 @@ export class AuthenticationService {
     private baseUrl: string;
     private authenticateUrl: string;
     private refreshUrl: string;
+    private httpHeaders = new HttpHeaders({
+        'Content-Type': 'application/json'
+    })
 
     constructor(@Inject(APP_CONFIG) private appConfig: AppConfig, private httpClient: HttpClient) {
         this.baseUrl = `${this.appConfig.serverUrl}/api/user`;
@@ -22,9 +25,11 @@ export class AuthenticationService {
 
     login = (request: AuthenticationRequest) : Observable<AuthenticationResponse> => {
         console.log('login service: login')
-        const httpHeaders = new HttpHeaders({
-            'Content-Type': 'application/json'
-        })
-        return this.httpClient.post<AuthenticationResponse>(this.authenticateUrl, request, {headers: httpHeaders});
+        return this.httpClient.post<AuthenticationResponse>(this.authenticateUrl, request, {headers: this.httpHeaders});
+    }
+
+    performTokenRefresh = () : Observable<AuthenticationResponse> => {
+        console.log('login service: peform token refresh')
+        return this.httpClient.post<AuthenticationResponse>(this.refreshUrl, '', {headers: this.httpHeaders});
     }
 }

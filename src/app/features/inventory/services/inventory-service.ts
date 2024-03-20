@@ -22,10 +22,10 @@ export class InventoryService {
     constructor(@Inject(APP_CONFIG) private appConfig: AppConfig, private httpClient: HttpClient, private store: Store<{login: AuthState}>) {
         this.baseUrl = `${this.appConfig.serverUrl}/api/inventory`;
         this.partUrl = `${this.appConfig.serverUrl}/api/part`;
-        this.store.select(state => state.login).subscribe(s => {
-            const token = s.accessToken ?? '';
-            this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
-        })
+        // this.store.select(state => state.login).subscribe(s => {
+        //     const token = s.accessToken ?? '';
+        //     this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
+        // })
     }
 
     createInventoryItem = (item: InventoryItem) : Observable<InventoryItemResponse> => {

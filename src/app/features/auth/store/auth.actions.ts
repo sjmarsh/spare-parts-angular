@@ -8,3 +8,7 @@ export const loginSuccess = createAction('[LOGIN] Login Success', props<{respons
 export const loginFail = createAction('[LOGIN] Login Fail', props<{response: AuthenticationResponse}>())
 
 export const logout = createAction('[LOGIN] Logout')
+
+export const performTokenRefresh = createAction('[LOGIN] Perform Token Refresh')
+export const performTokenRefreshSuccess = createAction('[LOGIN] Perform Token Refresh', props<{response: AuthenticationResponse}>())
+export const performTokenRefreshFail = createAction('[LOGIN] Perform Token Refresh', props<{response: AuthenticationResponse}>())
