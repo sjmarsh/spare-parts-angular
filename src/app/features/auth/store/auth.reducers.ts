@@ -2,8 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 
 import FetchStatus from "../../../constants/fetchStatus";
 import { getTokenDetails } from '../services/jwtHelpers';
-import { login, loginSuccess, loginFail, logout,
-        performTokenRefresh, performTokenRefreshSuccess, performTokenRefreshFail } from './auth.actions';
+import { login, loginSuccess, loginFail, logout, setToken } from './auth.actions';
 
 export interface AuthState {
     accessToken: string | null;
@@ -48,7 +47,11 @@ export const authReducer = createReducer(
         isAuthenticated: false,
         roles: null
     })),
-    on(performTokenRefresh, (state) => ({
+    on(setToken, (state, {token}) => ({
+        ...state,
+        accessToken: token
+    }))
+   /* on(performTokenRefresh, (state) => ({
         ...state,
         fetchStatus: FetchStatus.Loading
     })),
@@ -66,5 +69,5 @@ export const authReducer = createReducer(
         accessToken: null,
         roles: null,
         error: response?.message
-    }))
+    }))*/
 )

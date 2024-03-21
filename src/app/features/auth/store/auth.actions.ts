@@ -9,6 +9,7 @@ export const loginFail = createAction('[LOGIN] Login Fail', props<{response: Aut
 
 export const logout = createAction('[LOGIN] Logout')
 
-export const performTokenRefresh = createAction('[LOGIN] Perform Token Refresh')
-export const performTokenRefreshSuccess = createAction('[LOGIN] Perform Token Refresh', props<{response: AuthenticationResponse}>())
-export const performTokenRefreshFail = createAction('[LOGIN] Perform Token Refresh', props<{response: AuthenticationResponse}>())
+export const setToken = createAction('[LOGIN] Set Token', props<{token: string}>())
+//export const performTokenRefresh = createAction('[LOGIN] Perform Token Refresh', props<{token: String}>())
+//export const performTokenRefreshSuccess = createAction('[LOGIN] Perform Token Refresh', props<{response: AuthenticationResponse}>())
+//export const performTokenRefreshFail = createAction('[LOGIN] Perform Token Refresh', props<{response: AuthenticationResponse}>())

@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { switchMap, map, tap, catchError } from 'rxjs';
 
 import { AuthenticationService } from '../services/authentication-service';
-import { login, loginSuccess, loginFail, logout,
-        performTokenRefresh, performTokenRefreshSuccess, performTokenRefreshFail } from './auth.actions';
+import { login, loginSuccess, loginFail, logout } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
@@ -26,12 +25,12 @@ export class AuthEffects {
             this.router.navigate(['/home']); 
         })
     ), {dispatch: false})
-
+/*
     performTokenRefresh$ = createEffect(() => this.actions$.pipe(
         ofType(performTokenRefresh),
-        switchMap(() => this.loginService.performTokenRefresh().pipe(
+        switchMap(({token}) => this.loginService.performTokenRefresh(token).pipe(
             map(response => performTokenRefreshSuccess({response})),
             catchError(response => [performTokenRefreshFail(response)])
         ))
-    ))
+    ))*/
 }

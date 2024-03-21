@@ -28,8 +28,11 @@ export class AuthenticationService {
         return this.httpClient.post<AuthenticationResponse>(this.authenticateUrl, request, {headers: this.httpHeaders});
     }
 
-    performTokenRefresh = () : Observable<AuthenticationResponse> => {
+    performTokenRefresh = (token: String) : Observable<AuthenticationResponse> => {
         console.log('login service: peform token refresh')
+        debugger;
+        this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
+        debugger;
         return this.httpClient.post<AuthenticationResponse>(this.refreshUrl, '', {headers: this.httpHeaders});
     }
 }
