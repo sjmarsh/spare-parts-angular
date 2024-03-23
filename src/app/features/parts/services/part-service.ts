@@ -35,12 +35,12 @@ export class PartService {
         page = page ?? this.currentPage;
         let skip = (page == 0) ? 0 : page * TableSettings.PageSize;
         const paging = `?isCurrentOnly=False&skip=${skip}&take=${TableSettings.PageSize}`; // todo implement paging
-        return this.httpClient.get<PartListReponse>(`${fetchUrl}${paging}`, {headers: this.httpHeaders});
+        return this.httpClient.get<PartListReponse>(`${fetchUrl}${paging}`, {headers: this.httpHeaders, withCredentials: true});
     }
 
     fetchPart(partId: number): Observable<PartResponse> {
         const fetchUrl = `${this.baseUrl}/?id=${partId}`;
-        return this.httpClient.get<PartResponse>(fetchUrl, {headers: this.httpHeaders});     
+        return this.httpClient.get<PartResponse>(fetchUrl, {headers: this.httpHeaders, withCredentials: true});     
     }
 
     createPart(part: Part): Observable<PartResponse> {
@@ -48,7 +48,7 @@ export class PartService {
             console.log('part undefined')
             return of({ hasError: true, message: 'Cannot create null part.'} as PartResponse);
         }
-        return this.httpClient.post<PartResponse>(this.baseUrl, part, {headers: this.httpHeaders});
+        return this.httpClient.post<PartResponse>(this.baseUrl, part, {headers: this.httpHeaders, withCredentials: true});
     }
 
     updatePart(part: Part): Observable<PartResponse> {
@@ -56,7 +56,7 @@ export class PartService {
             console.log('part undefined')
             return of({ hasError: true, message: 'Cannot update null part.'} as PartResponse);
         }
-        return this.httpClient.put<PartResponse>(this.baseUrl, part, {headers: this.httpHeaders});
+        return this.httpClient.put<PartResponse>(this.baseUrl, part, {headers: this.httpHeaders, withCredentials: true});
     }
 
     deletePart(partId: number): Observable<PartResponse> {
@@ -64,17 +64,17 @@ export class PartService {
             return of({ hasError: true, message: 'PartId must be provided for the part to delete.'} as PartResponse);
         }
         const deleteUrl = `${this.baseUrl}/?id=${partId}`;
-        return this.httpClient.delete<PartResponse>(deleteUrl, {headers: this.httpHeaders});
+        return this.httpClient.delete<PartResponse>(deleteUrl, {headers: this.httpHeaders, withCredentials: true});
     }
 
     fetchReport(): Observable<ArrayBuffer> {
         const reportUrl = `${this.baseUrl}/report`;
-        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, responseType: "arraybuffer"});
+        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, withCredentials: true, responseType: "arraybuffer"});
     }
 
     fetchCurrentParts = () : Observable<PartListReponse> => {
         const fetchUrl = `${this.baseUrl}/index?isCurrentOnly=true`
-        return this.httpClient.get<PartListReponse>(fetchUrl, {headers: this.httpHeaders});
+        return this.httpClient.get<PartListReponse>(fetchUrl, {headers: this.httpHeaders, withCredentials: true});
     }
 
 }

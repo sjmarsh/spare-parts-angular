@@ -33,7 +33,7 @@ export class InventoryService {
             console.log('item undefined');
             return of({ hasError: true, message: 'Cannot create null Inventory Item.' } as InventoryItemResponse);
         }
-        return this.httpClient.post<InventoryItemResponse>(this.baseUrl, item, {headers: this.httpHeaders});
+        return this.httpClient.post<InventoryItemResponse>(this.baseUrl, item, {headers: this.httpHeaders, withCredentials: true});
     }
 
     createInventoryItemList = (items: InventoryItem[]) : Observable<InventoryItemListResponse> => {
@@ -41,18 +41,18 @@ export class InventoryService {
             console.log("Can't create null inventory items");
             return of({ hasError: true, message: 'Cannot create null Inventory Item.' } as InventoryItemListResponse);
         }
-        return this.httpClient.post<InventoryItemListResponse>(`${this.baseUrl}/post-list`, items, {headers: this.httpHeaders});
+        return this.httpClient.post<InventoryItemListResponse>(`${this.baseUrl}/post-list`, items, {headers: this.httpHeaders, withCredentials: true});
     }
 
     fetchInventory = (options: InventoryFetchOptions) : Observable<InventoryItemListResponse> => {
         let current = options.isCurrent ? "isCurrentOnly=true&" : "";
         let skip = (options.page == 0) ? 0 : options.page * TableSettings.PageSize;  
         let skipQuery = options.takeAll ? "" : `skip=${skip}&take=${TableSettings.PageSize}`;
-        return this.httpClient.get<InventoryItemListResponse>(`${this.baseUrl}/index-detail?${current}${skipQuery}`,  {headers: this.httpHeaders});
+        return this.httpClient.get<InventoryItemListResponse>(`${this.baseUrl}/index-detail?${current}${skipQuery}`,  {headers: this.httpHeaders, withCredentials: true});
     }
 
     fetchReport = (isCurrent: boolean) : Observable<ArrayBuffer> => {
         const reportUrl = `${this.baseUrl}/report?isCurrentOnly=${isCurrent}`;
-        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, responseType: "arraybuffer"});
+        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, withCredentials: true, responseType: "arraybuffer"});
     }
 }

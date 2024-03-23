@@ -1,5 +1,5 @@
 import { Injectable, Inject } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { Observable } from "rxjs";
 
 import { APP_CONFIG, AppConfig } from "../../../app.config";
@@ -25,14 +25,14 @@ export class AuthenticationService {
 
     login = (request: AuthenticationRequest) : Observable<AuthenticationResponse> => {
         console.log('login service: login')
-        return this.httpClient.post<AuthenticationResponse>(this.authenticateUrl, request, {headers: this.httpHeaders});
+        return this.httpClient.post<AuthenticationResponse>(this.authenticateUrl, request, {headers: this.httpHeaders, withCredentials: true});
     }
 
     performTokenRefresh = (token: String) : Observable<AuthenticationResponse> => {
         console.log('login service: peform token refresh')
         debugger;
         this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
-        debugger;
-        return this.httpClient.post<AuthenticationResponse>(this.refreshUrl, '', {headers: this.httpHeaders});
+        console.log(this.httpHeaders.getAll('Authorization'))
+        return this.httpClient.post<AuthenticationResponse>(this.refreshUrl, '', {headers: this.httpHeaders, withCredentials: true});
     }
 }

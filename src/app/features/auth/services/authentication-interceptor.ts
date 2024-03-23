@@ -51,7 +51,12 @@ export class AuthenticationInterceptor implements HttpInterceptor {
         let newRequest = req.clone({
             setHeaders: { Authorization: `Bearer ${this.token}`}
         })
+        
         console.log(`Request intercepted. Token value: ${this.token}`)
         return next.handle(newRequest);
     }
 }
+/*
+withCredentials: true, 
+  observe: 'response' as 'response'
+*/

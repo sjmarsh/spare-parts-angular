@@ -8,6 +8,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 - Angular Material
 - NgRx
 
+** Remeber to setup local dev certificates in a \certs folder using "mkcert localhost" command.
+
 
 
 ## Development server

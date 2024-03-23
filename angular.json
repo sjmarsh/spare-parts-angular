@@ -75,6 +75,10 @@
               "buildTarget": "spare-parts-angular:build:development"
             }
           },
+          "options": {
+            "sslKey": "./certs/localhost-key.pem",
+            "sslCert": "./certs/localhost.pem"
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
