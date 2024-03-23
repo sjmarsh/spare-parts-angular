@@ -1,5 +1,5 @@
 import { Injectable, Inject } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import { Store } from '@ngrx/store';
 
@@ -16,16 +16,9 @@ import TableSettings from "../../../constants/tableSettings";
   })
 export class InventoryService {
     private baseUrl = ''
-    private partUrl = ''
-    private httpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     
     constructor(@Inject(APP_CONFIG) private appConfig: AppConfig, private httpClient: HttpClient, private store: Store<{login: AuthState}>) {
         this.baseUrl = `${this.appConfig.serverUrl}/api/inventory`;
-        this.partUrl = `${this.appConfig.serverUrl}/api/part`;
-        // this.store.select(state => state.login).subscribe(s => {
-        //     const token = s.accessToken ?? '';
-        //     this.httpHeaders = this.httpHeaders.set('Authorization', `Bearer ${token}`);
-        // })
     }
 
     createInventoryItem = (item: InventoryItem) : Observable<InventoryItemResponse> => {
@@ -33,7 +26,7 @@ export class InventoryService {
             console.log('item undefined');
             return of({ hasError: true, message: 'Cannot create null Inventory Item.' } as InventoryItemResponse);
         }
-        return this.httpClient.post<InventoryItemResponse>(this.baseUrl, item, {headers: this.httpHeaders, withCredentials: true});
+        return this.httpClient.post<InventoryItemResponse>(this.baseUrl, item);
     }
 
     createInventoryItemList = (items: InventoryItem[]) : Observable<InventoryItemListResponse> => {
@@ -41,18 +34,18 @@ export class InventoryService {
             console.log("Can't create null inventory items");
             return of({ hasError: true, message: 'Cannot create null Inventory Item.' } as InventoryItemListResponse);
         }
-        return this.httpClient.post<InventoryItemListResponse>(`${this.baseUrl}/post-list`, items, {headers: this.httpHeaders, withCredentials: true});
+        return this.httpClient.post<InventoryItemListResponse>(`${this.baseUrl}/post-list`, items);
     }
 
     fetchInventory = (options: InventoryFetchOptions) : Observable<InventoryItemListResponse> => {
         let current = options.isCurrent ? "isCurrentOnly=true&" : "";
         let skip = (options.page == 0) ? 0 : options.page * TableSettings.PageSize;  
         let skipQuery = options.takeAll ? "" : `skip=${skip}&take=${TableSettings.PageSize}`;
-        return this.httpClient.get<InventoryItemListResponse>(`${this.baseUrl}/index-detail?${current}${skipQuery}`,  {headers: this.httpHeaders, withCredentials: true});
+        return this.httpClient.get<InventoryItemListResponse>(`${this.baseUrl}/index-detail?${current}${skipQuery}`);
     }
 
     fetchReport = (isCurrent: boolean) : Observable<ArrayBuffer> => {
         const reportUrl = `${this.baseUrl}/report?isCurrentOnly=${isCurrent}`;
-        return this.httpClient.get(reportUrl, {headers: this.httpHeaders, withCredentials: true, responseType: "arraybuffer"});
+        return this.httpClient.get(reportUrl, {responseType: "arraybuffer"});
     }
 }

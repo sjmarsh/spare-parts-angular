@@ -57,7 +57,6 @@ export class LoginComponent {
         this.store.select(state => state.login)
             .subscribe(s => {
                 if(s) {
-                    console.log(s)
                     this.hasError = s.fetchStatus === FetchStatus.Failed
                     this.errorMessage = s.error ?? ''
                     if(s.fetchStatus === FetchStatus.Succeeded && s.isAuthenticated) {

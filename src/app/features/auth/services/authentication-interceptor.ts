@@ -14,28 +14,22 @@ export class AuthenticationInterceptor implements HttpInterceptor {
     hasExpired: boolean = false;
     token: string = '';
 
-    constructor(private store: Store<{login: AuthState}>, private authenticationService: AuthenticationService) {
-        // this.store.select(state => state.login).subscribe(s => {
-        //     this.token = s.accessToken ?? '';
-        //     this.hasExpired = getTokenDetails(this.token).HasExpired;       
-        // })        
+    constructor(private store: Store<{login: AuthState}>, private authenticationService: AuthenticationService) {    
     }
     
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log('interceptor')
-    
+            
+        // guard agains authenticate and refresh calls as we only want to intercept all otehr calls
         if (req.url.includes("user/authenticate") || req.url.includes('user/refresh')) {
             console.log("POST INTERCEPT authenticate/refresh: ", req.url);
             return next.handle(req);
         }
 
         this.store.select(state => state.login).subscribe(s => {
-            console.log('sub')
             this.token = s.accessToken ?? '';
             this.hasExpired = getTokenDetails(this.token).HasExpired;       
             if(this.hasExpired) {
-                console.log('Token has expired');
-                //this.store.dispatch(performTokenRefresh({token: this.token}));
+                console.log('Token has expired. Attempting to refresh.');
                 this.authenticationService.performTokenRefresh(this.token).subscribe(res => {
                     if(res.isAuthenticated && res.accessToken) {
                         this.store.dispatch(setToken({token: res.accessToken}));
@@ -44,19 +38,17 @@ export class AuthenticationInterceptor implements HttpInterceptor {
                         this.store.dispatch(loginFail({response: res}));
                     }
                 })
-                debugger;
             }
         })
         
         let newRequest = req.clone({
-            setHeaders: { Authorization: `Bearer ${this.token}`}
+            setHeaders: { 
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.token}`
+            },
+            withCredentials: true
         })
-        
-        console.log(`Request intercepted. Token value: ${this.token}`)
+                
         return next.handle(newRequest);
     }
 }
-/*
-withCredentials: true, 
-  observe: 'response' as 'response'
-*/
