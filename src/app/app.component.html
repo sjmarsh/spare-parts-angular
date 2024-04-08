@@ -48,6 +48,14 @@
             </a>
           </span>
         </a>
+        <a *ngIf="this.authirzationService?.userIsLoggedIn() && this.authirzationService?.userHasRequiredRoles([userRoles.Administrator])" mat-list-item>
+          <span class="entry nav-item">
+            <a routerLink="/part-search" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
+              <mat-icon>search</mat-icon>
+              <span *ngIf="!isCollapsed"> Search</span>
+            </a>
+          </span>
+        </a>
       </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content>
