@@ -16,6 +16,7 @@ import FilterLine from '../types/filterLine';
 import { FilterOperator, NamedFilterOperator, nameFilterOperatorsForStrings } from '../types/filterOperators';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { getUUid } from '../../../infrastructure/uuidHelper';
+import PartCategory from '../../../features/parts/types/PartCategory';
 
 @Component({
     selector: 'app-filter-grid',
@@ -74,7 +75,8 @@ export class FilterGridComponent {
     constructor() {
         this.filterFields = [
             { id: getUUid(), name: 'One', type: FilterFieldType.StringType, isSelected: true } as FilterField,
-            { id: getUUid(), name: 'Two', type: FilterFieldType.StringType, isSelected: false } as FilterField
+            { id: getUUid(), name: 'Two', type: FilterFieldType.NumberType, isSelected: false } as FilterField, 
+            { id: getUUid(), name: 'Three', type: FilterFieldType.EnumType, enumType: PartCategory, isSelected: false } as FilterField, 
         ]
         this.filterLines = [
             { id: getUUid(), selectedField: this.filterFields[0], selectedOperator: FilterOperator.Equal, value: 'test' } as FilterLine
