@@ -19,13 +19,13 @@ import FilterFieldType from '../types/filterFieldType';
         <mat-form-field>
             <mat-label>Field</mat-label>
             <mat-select name="field" formControlName="selectedField" (selectionChange)="handleFieldChanged($event)">
-                <mat-option *ngFor="let field of fields" [value]="selectedField.id">{{field.name}}</mat-option>
+                <mat-option *ngFor="let field of fields" [value]="field.id">{{field.name}}</mat-option>
             </mat-select>       
         </mat-form-field>
         <mat-form-field>
             <mat-label>Operator</mat-label>
             <mat-select name="operator" formControlName="selectedOperator" (selectionChange)="handleOperatorChanged($event)">
-                <mat-option *ngFor="let operator of operators" [value]="selectedOperator">{{operator.name}}</mat-option>
+                <mat-option *ngFor="let operator of operators" [value]="operator">{{operator.name}}</mat-option>
             </mat-select>       
         </mat-form-field>
         <mat-form-field>
@@ -40,6 +40,7 @@ import FilterFieldType from '../types/filterFieldType';
             </ng-template>
             
         </mat-form-field>
+        
         <button mat-flat-button type="button" (click)="deleteFilter()" value="deleteFilter">Delete</button>
     `
 })
@@ -56,14 +57,13 @@ export class FilterSelectorComponent {
     operators: Array<NamedFilterOperator>
     value: String
 
+
     constructor() {
         this.selectedField = { type: FilterFieldType.StringType  } as FilterField;
         this.operators = [];
         this.updateOperators();
         this.selectedOperator = this.operators[0];
-        this.value = ""
-
-        
+        this.value = ""    
     }
 
     ngOnInit(): void {   
@@ -91,7 +91,7 @@ export class FilterSelectorComponent {
         }
     }
 
-    handleFieldChanged = (e: MatSelectChange) => {        
+    handleFieldChanged = (e: MatSelectChange) => {     
         if(e && e.value && this.fields && this.filterLine && this.onFilterLineChanged) {
             this.selectedField = this.fields.find(f => f.id === e.value) ?? this.selectedField;
             this.filterLine = {...this.filterLine, selectedField: this.selectedField};
@@ -107,7 +107,6 @@ export class FilterSelectorComponent {
             this.filterLine = {...this.filterLine, selectedOperator: newOperatorSelection.filterOperator};
             this.onFilterLineChanged(this.filterLine);
         }
-        
     }
 
     selectedFieldIsEnumType = () : boolean => {

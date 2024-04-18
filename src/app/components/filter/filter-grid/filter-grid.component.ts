@@ -102,12 +102,12 @@ export class FilterGridComponent {
     }
 
     handleToggleFilterField = (filterField: FilterField) => {
-        console.log(filterField);
+        console.log('FilterFieldToggle: ' + JSON.stringify(filterField));
 
     }
 
     handleFilterLineChanged = (filterLine: FilterLine) => {
-
+        console.log('FilterLineChanged: ' + JSON.stringify(filterLine))
     }
 
     handleRemoveFilter = (filterLine: FilterLine) => {
