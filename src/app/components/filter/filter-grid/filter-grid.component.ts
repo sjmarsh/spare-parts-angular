@@ -54,19 +54,21 @@ import PartCategory from '../../../features/parts/types/PartCategory';
                                 [onFilterLineChanged]="handleFilterLineChanged"
                                 [onRemoveFilter]="handleRemoveFilter">
                             </app-filter-selector>
-                        }                              
+                        }  
+                        <button mat-button type="button" (click)="addEmptyFilter()">Add Filter</button>
+                        <button mat-button type="button" (click)="search()">Search</button>
                     </form>
                 </mat-card>
             </details>
         </ng-container>
-
-
     </div>
     `
 })
 
 export class FilterGridComponent {
     
+    MAX_FILTER_LINE_COUNT = 5;
+
     filterFields: FilterField[]
     filterLines: FilterLine[]
     filterFormGroup?: FormGroup
@@ -112,6 +114,20 @@ export class FilterGridComponent {
 
     handleRemoveFilter = (filterLine: FilterLine) => {
         console.log('remove filter' + JSON.stringify(filterLine))
+        if(filterLine && filterLine.id) {
+            this.filterLines = this.filterLines.filter(f => f.id !== filterLine.id);
+        } 
+    }
+
+    addEmptyFilter = () => {
+        if(this.filterLines.length < this.MAX_FILTER_LINE_COUNT) {
+            const newLine = { id: getUUid(), selectedField: this.filterFields[0], selectedOperator: FilterOperator.Equal, value: '' } as FilterLine
+            this.filterLines = [...this.filterLines, newLine];
+        }
+    }
+
+    search =  () => {
+
     }
 
     handleValidSubmit = () : void => {

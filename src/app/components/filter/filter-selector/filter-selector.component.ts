@@ -16,6 +16,7 @@ import FilterFieldType from '../types/filterFieldType';
     imports: [CommonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
     styleUrl: './filter-selector.component.css',
     template: `
+    <div>
         <mat-form-field>
             <mat-label>Field</mat-label>
             <mat-select name="field" formControlName="selectedField" (selectionChange)="handleFieldChanged($event)">
@@ -42,6 +43,7 @@ import FilterFieldType from '../types/filterFieldType';
         </mat-form-field>
         
         <button mat-flat-button type="button" (click)="deleteFilter()" value="deleteFilter">Delete</button>
+    </div>
     `
 })
 
