@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -37,7 +37,7 @@ import FilterFieldType from '../types/filterFieldType';
                 </mat-select>
             </ng-container>
             <ng-template #notAnEnum>
-                <input matInput formControlName="value" [value]="value"/>
+                <input matNativeControl formControlName="value" [value]="value" (keyup)="handleValueChanged($event)"/>
             </ng-template>
             
         </mat-form-field>
@@ -129,4 +129,16 @@ export class FilterSelectorComponent {
             this.onFilterLineChanged(this.filterLine);
         }
     }
+
+    handleValueChanged = (e: KeyboardEvent) => {
+        let ke = e as KeyboardEvent;
+        if(ke && ke.target && ke.target) {
+            let t = ke.target as HTMLInputElement;
+            if(this.filterLine && this.onFilterLineChanged && t.value) {
+                this.filterLine = {...this.filterLine, value: t.value};
+                this.onFilterLineChanged(this.filterLine);
+            }    
+        }        
+    }
+
 }
