@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -8,14 +8,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
-
 import { FilterSelectorComponent } from '../filter-selector/filter-selector.component';
 import FilterField from '../types/filterField';
 import FilterFieldType from '../types/filterFieldType';
+import FilterGridState from '../types/filterGridState';
 import FilterLine from '../types/filterLine';
 import { FilterOperator, NamedFilterOperator, nameFilterOperatorsForStrings } from '../types/filterOperators';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { getUUid } from '../../../infrastructure/uuidHelper';
+import { GraphQLBuilder } from '../services/graphQLRequestBuilder';
+import GraphQLRequest from '../types/graphQLRequest';
+import PageOffset from '../types/pageOffset';
 import PartCategory from '../../../features/parts/types/PartCategory';
 
 @Component({
@@ -73,16 +76,21 @@ import PartCategory from '../../../features/parts/types/PartCategory';
     `
 })
 
-export class FilterGridComponent {
-    
+export class FilterGridComponent<T> {
+
+    @Input({required: true}) filterGridState?: FilterGridState<T>;
+    @Input({required: true}) rootGraphQLField?: string;
+    @Input({required: true}) triggerServiceCall?: (graphQLRequest: GraphQLRequest) => void | null;
+
+        
+    PAGE_SIZE = 10;
     MAX_FILTER_LINE_COUNT = 5;
 
     filterFields: FilterField[]
     filterLines: FilterLine[]
     filterFormGroup?: FormGroup
 
-
-    constructor() {
+    constructor(private graphQLBuilder: GraphQLBuilder) {
         this.filterFields = [
             { id: getUUid(), name: 'One', type: FilterFieldType.StringType, isSelected: true } as FilterField,
             { id: getUUid(), name: 'Two', type: FilterFieldType.NumberType, isSelected: false } as FilterField, 
@@ -134,8 +142,15 @@ export class FilterGridComponent {
         }
     }
 
-    search =  () => {
+    search = (currentPage?: number | null) => {
+        // todo validate
 
+        if(this.filterGridState && this.triggerServiceCall) {
+            const currentResultPage = currentPage ?? this.filterGridState.currentResultPage;
+            const pageOffset = { skip: currentResultPage * this.PAGE_SIZE - this.PAGE_SIZE, take: this.PAGE_SIZE } as PageOffset;
+            const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
+            this.triggerServiceCall(graphQLRequest);
+        }        
     }
 
     handleValidSubmit = () : void => {
