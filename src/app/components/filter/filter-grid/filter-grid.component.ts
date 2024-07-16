@@ -26,40 +26,48 @@ import PartCategory from '../../../features/parts/types/PartCategory';
     template: `
     <div>
         <ng-container *ngIf="filterFields">
-            <details>
-                <summary>Fields</summary>
-                <mat-card>
-                <mat-chip-listbox aria-label="Select Fields">
-                @for (filterField of filterFields; track filterField) {
-                    <mat-chip-option 
-                        [selected]="filterField.isSelected"
-                        (click)="handleToggleFilterField(filterField)"
-                        color="warm">
-                        {{filterField.name}}
-                    </mat-chip-option>
-                }
-                </mat-chip-listbox>
-                </mat-card>
-            </details>
+            <div class="detail-margin">
+                <details open="true">
+                    <summary>Fields</summary>
+                    <mat-card appearance="outlined">
+                        <mat-card-content>
+                            <mat-chip-listbox aria-label="Select Fields">
+                            @for (filterField of filterFields; track filterField) {
+                                <mat-chip-option 
+                                    [selected]="filterField.isSelected"
+                                    (click)="handleToggleFilterField(filterField)"
+                                    color="warm">
+                                    {{filterField.name}}
+                                </mat-chip-option>
+                            }
+                            </mat-chip-listbox>
+                        </mat-card-content>
+                    </mat-card>
+                </details>
+            </div>
         </ng-container>
         <ng-container *ngIf="filterLines && filterFields && filterFormGroup">
-            <details>
-                <summary>Filters</summary>
-                <mat-card>
-                    <form [formGroup]="filterFormGroup" (ngSubmit)="handleValidSubmit()">
-                        @for(filterLine of filterLines; track filterLine) {
-                            <app-filter-selector 
-                                [filterLine]="filterLine" 
-                                [fields]="filterFields"
-                                [onFilterLineChanged]="handleFilterLineChanged"
-                                [onRemoveFilter]="handleRemoveFilter">
-                            </app-filter-selector>
-                        }  
-                        <button mat-button type="button" (click)="addEmptyFilter()">Add Filter</button>
-                        <button mat-button type="button" (click)="search()">Search</button>
-                    </form>
-                </mat-card>
-            </details>
+            <div class="detail-margin">
+                <details open="true">
+                    <summary>Filters</summary>
+                    <mat-card appearance="outlined">
+                        <mat-card-content>
+                        <form [formGroup]="filterFormGroup" (ngSubmit)="handleValidSubmit()">
+                            @for(filterLine of filterLines; track filterLine) {
+                                <app-filter-selector 
+                                    [filterLine]="filterLine" 
+                                    [fields]="filterFields"
+                                    [onFilterLineChanged]="handleFilterLineChanged"
+                                    [onRemoveFilter]="handleRemoveFilter">
+                                </app-filter-selector>
+                            }  
+                            <button mat-button type="button" (click)="addEmptyFilter()">Add Filter</button>
+                            <button mat-button type="button" (click)="search()">Search</button>
+                        </form>
+                        </mat-card-content>
+                    </mat-card>
+                </details>
+            </div>
         </ng-container>
     </div>
     `
