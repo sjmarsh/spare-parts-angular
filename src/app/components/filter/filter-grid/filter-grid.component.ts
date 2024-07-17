@@ -7,6 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 import { FilterSelectorComponent } from '../filter-selector/filter-selector.component';
 import FilterField from '../types/filterField';
@@ -23,7 +25,7 @@ import { updateArrayItem } from '../../../infrastructure/arrayHelper';
 @Component({
     selector: 'app-filter-grid',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatChipsModule, MatIconModule, FilterSelectorComponent, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatChipsModule, MatIconModule, FilterSelectorComponent, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatPaginatorModule],
     styleUrl: './filter-grid.component.css',
     template: `
     <div>
@@ -71,7 +73,17 @@ import { updateArrayItem } from '../../../infrastructure/arrayHelper';
                 </details>
             </div>
         </ng-container>
-        
+        <div>
+            <table mat-table [dataSource]="filterGridState.filterResults?.items || []">
+                <ng-container *ngFor="let col of displayedColumns" [matColumnDef]=col>
+                    <th mat-header-cell *matHeaderCellDef>{{col}}</th>
+                    <td mat-cell *matCellDef="let element">{{element[col]}}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+
     </div>
     `
 })
@@ -89,12 +101,14 @@ export class FilterGridComponent<T> {
     filterFields: Array<FilterField>
     filterLines: Array<FilterLine>
     filterFormGroup?: FormGroup
+    displayedColumns: Array<string>
 
     constructor(private graphQLBuilder: GraphQLBuilder) {
         this.filterFields = [];
         this.filterLines = [];
         this.filterGridState = { filterFields: this.filterFields, filterLines: this.filterLines, isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
         this.rootGraphQLField = '';
+        this.displayedColumns = [];
         this.initFilters();
     }
 
@@ -106,6 +120,7 @@ export class FilterGridComponent<T> {
         this.filterFields = this.filterGridState?.filterFields || [];
         this.filterLines = this.filterGridState?.filterLines || [];
         this.filterFormGroup = this.initForm(this.filterLines);
+        this.displayedColumns = this.getDisplayColumns();
     }
 
     initForm = (filterLines: Array<FilterLine>): FormGroup => {
@@ -130,7 +145,6 @@ export class FilterGridComponent<T> {
     }
 
     handleToggleFilterField = (filterField: FilterField) => {
-        console.log('FilterFieldToggle: ' + JSON.stringify(filterField));
         const isFilterSelected = this.filterLines.find(f => f.selectedField.id === filterField.id);
             if(!isFilterSelected) {  // don't toggle chip if the filter is in use
                 let itemToToggle = this.filterFields.find(f => f.id === filterField.id);
@@ -141,12 +155,12 @@ export class FilterGridComponent<T> {
                     state.filterFields = updateArrayItem<FilterField>(state.filterFields, itemToUpdate);                    
                     this.updateFilterGridState(state);
                     this.filterFields = state.filterFields;
+                    this.displayedColumns = this.getDisplayColumns();
                 }
             }
     }
 
     handleFilterLineChanged = (filterLine: FilterLine) => {
-        console.log('FilterLineChanged: ' + JSON.stringify(filterLine))
         if(this.filterLines.find(f => f.id == filterLine.id)) {
             // update
             this.filterLines = updateArrayItem<FilterLine>(this.filterLines, filterLine);
@@ -160,7 +174,6 @@ export class FilterGridComponent<T> {
     }
 
     handleRemoveFilter = (filterLine: FilterLine) => {
-        console.log('remove filter' + JSON.stringify(filterLine))
         if(filterLine && filterLine.id) {
             this.filterLines = this.filterLines.filter(f => f.id !== filterLine.id);
             this.updateFilterGridState({ ... this.filterGridState, filterLines: this.filterLines})
@@ -180,13 +193,17 @@ export class FilterGridComponent<T> {
         if(this.filterGridState && this.triggerServiceCall) {
             const currentResultPage = currentPage ?? this.filterGridState.currentResultPage;
             const pageOffset = { skip: currentResultPage * this.PAGE_SIZE - this.PAGE_SIZE, take: this.PAGE_SIZE } as PageOffset;
-            console.log(this.filterLines);
             const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
             this.triggerServiceCall(graphQLRequest);
-        }        
+        }
     }
 
     handleValidSubmit = () : void => {
         this.search();
+    }
+
+    getDisplayColumns = () : Array<string> => {
+        // todo - this needs to better handle duplicate column names
+        return [... new Set(this.filterFields.filter(f => f.isSelected === true).map(f => f.name))];
     }
 }
