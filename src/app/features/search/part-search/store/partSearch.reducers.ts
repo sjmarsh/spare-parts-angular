@@ -7,7 +7,7 @@ import { getUUid } from "../../../../infrastructure/uuidHelper";
 import { PagedData, PageInfo } from "../../../../components/filter/types/pagedData";
 import Part from "../../../parts/types/Part";
 import { partFields } from "../types/partFields";
-import { partSearch, partSearchFail, partSearchSuccess } from "./partSearch.actions";
+import { partSearch, partSearchFail, partSearchSuccess, updateFilterGridState } from "./partSearch.actions";
 
 export interface PartSearchState {
     filterGridState: FilterGridState<Part>
@@ -35,5 +35,6 @@ export const partSearchReducer = createReducer(
         status: FetchStatus.Succeeded, 
         filterGridState: {...state.filterGridState, filterResults: response.data?.parts}
     })),
-    on(partSearchFail, (state) => ({...state, status: FetchStatus.Failed}))
+    on(partSearchFail, (state) => ({...state, status: FetchStatus.Failed})),
+    on(updateFilterGridState, (state, {updatedState}) => ({...state, filterGridState: updatedState }))
 )

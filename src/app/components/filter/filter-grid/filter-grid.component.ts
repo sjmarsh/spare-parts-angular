@@ -10,16 +10,15 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { FilterSelectorComponent } from '../filter-selector/filter-selector.component';
 import FilterField from '../types/filterField';
-import FilterFieldType from '../types/filterFieldType';
 import FilterGridState from '../types/filterGridState';
 import FilterLine from '../types/filterLine';
-import { FilterOperator, NamedFilterOperator, nameFilterOperatorsForStrings } from '../types/filterOperators';
+import { FilterOperator } from '../types/filterOperators';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { getUUid } from '../../../infrastructure/uuidHelper';
 import { GraphQLBuilder } from '../services/graphQLRequestBuilder';
 import GraphQLRequest from '../types/graphQLRequest';
 import PageOffset from '../types/pageOffset';
-import PartCategory from '../../../features/parts/types/PartCategory';
+import { updateArrayItem } from '../../../infrastructure/arrayHelper';
 
 @Component({
     selector: 'app-filter-grid',
@@ -72,36 +71,41 @@ import PartCategory from '../../../features/parts/types/PartCategory';
                 </details>
             </div>
         </ng-container>
+        
     </div>
     `
 })
 
 export class FilterGridComponent<T> {
 
-    @Input({required: true}) filterGridState?: FilterGridState<T>;
-    @Input({required: true}) rootGraphQLField?: string;
+    @Input({required: true}) filterGridState: FilterGridState<T>;
+    @Input({required: true}) rootGraphQLField: string;
     @Input({required: true}) triggerServiceCall?: (graphQLRequest: GraphQLRequest) => void | null;
-
+    @Input({required: true}) onFilterStateChanged?: (filterGridState: FilterGridState<T>) => void | null;
         
     PAGE_SIZE = 10;
     MAX_FILTER_LINE_COUNT = 5;
 
-    filterFields: FilterField[]
-    filterLines: FilterLine[]
+    filterFields: Array<FilterField>
+    filterLines: Array<FilterLine>
     filterFormGroup?: FormGroup
 
     constructor(private graphQLBuilder: GraphQLBuilder) {
-        this.filterFields = [
-            { id: getUUid(), name: 'One', type: FilterFieldType.StringType, isSelected: true } as FilterField,
-            { id: getUUid(), name: 'Two', type: FilterFieldType.NumberType, isSelected: false } as FilterField, 
-            { id: getUUid(), name: 'Three', type: FilterFieldType.EnumType, enumType: PartCategory, isSelected: false } as FilterField, 
-        ]
-        this.filterLines = [
-            { id: getUUid(), selectedField: this.filterFields[0], selectedOperator: FilterOperator.Equal, value: 'test' } as FilterLine
-        ]
+        this.filterFields = [];
+        this.filterLines = [];
+        this.filterGridState = { filterFields: this.filterFields, filterLines: this.filterLines, isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
+        this.rootGraphQLField = '';
+        this.initFilters();
+    }
 
+    ngOnInit(): void { 
+        this.initFilters();
+    }
+
+    initFilters = () => {
+        this.filterFields = this.filterGridState?.filterFields || [];
+        this.filterLines = this.filterGridState?.filterLines || [];
         this.filterFormGroup = this.initForm(this.filterLines);
-
     }
 
     initForm = (filterLines: Array<FilterLine>): FormGroup => {
@@ -119,19 +123,47 @@ export class FilterGridComponent<T> {
         return new FormGroup({ items: itemArray });
     }
 
+    updateFilterGridState = (filterGridState: FilterGridState<T>) => {
+        if(this.onFilterStateChanged) {
+            return this.onFilterStateChanged(filterGridState);
+        }        
+    }
+
     handleToggleFilterField = (filterField: FilterField) => {
         console.log('FilterFieldToggle: ' + JSON.stringify(filterField));
-
+        const isFilterSelected = this.filterLines.find(f => f.selectedField.id === filterField.id);
+            if(!isFilterSelected) {  // don't toggle chip if the filter is in use
+                let itemToToggle = this.filterFields.find(f => f.id === filterField.id);
+                if(itemToToggle) {
+                    const itemToUpdate = { ... itemToToggle };
+                    itemToUpdate.isSelected = !itemToToggle.isSelected;
+                    let state = { ... this.filterGridState };
+                    state.filterFields = updateArrayItem<FilterField>(state.filterFields, itemToUpdate);                    
+                    this.updateFilterGridState(state);
+                    this.filterFields = state.filterFields;
+                }
+            }
     }
 
     handleFilterLineChanged = (filterLine: FilterLine) => {
         console.log('FilterLineChanged: ' + JSON.stringify(filterLine))
+        if(this.filterLines.find(f => f.id == filterLine.id)) {
+            // update
+            this.filterLines = updateArrayItem<FilterLine>(this.filterLines, filterLine);
+            this.updateFilterGridState({...this.filterGridState, filterLines: this.filterLines });
+        }
+        else {
+            // add
+            this.filterLines = [ ... this.filterLines, filterLine ];
+            this.updateFilterGridState({ ... this.filterGridState, filterLines: this.filterLines });
+        }
     }
 
     handleRemoveFilter = (filterLine: FilterLine) => {
         console.log('remove filter' + JSON.stringify(filterLine))
         if(filterLine && filterLine.id) {
             this.filterLines = this.filterLines.filter(f => f.id !== filterLine.id);
+            this.updateFilterGridState({ ... this.filterGridState, filterLines: this.filterLines})
         } 
     }
 
@@ -148,12 +180,13 @@ export class FilterGridComponent<T> {
         if(this.filterGridState && this.triggerServiceCall) {
             const currentResultPage = currentPage ?? this.filterGridState.currentResultPage;
             const pageOffset = { skip: currentResultPage * this.PAGE_SIZE - this.PAGE_SIZE, take: this.PAGE_SIZE } as PageOffset;
+            console.log(this.filterLines);
             const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
             this.triggerServiceCall(graphQLRequest);
         }        
     }
 
     handleValidSubmit = () : void => {
-
+        this.search();
     }
 }
