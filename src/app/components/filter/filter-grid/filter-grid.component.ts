@@ -19,13 +19,14 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular
 import { getUUid } from '../../../infrastructure/uuidHelper';
 import { GraphQLBuilder } from '../services/graphQLRequestBuilder';
 import GraphQLRequest from '../types/graphQLRequest';
+import { HumanizePipe } from '../../../infrastructure/humanizePipe';
 import PageOffset from '../types/pageOffset';
 import { updateArrayItem } from '../../../infrastructure/arrayHelper';
 
 @Component({
     selector: 'app-filter-grid',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatChipsModule, MatIconModule, FilterSelectorComponent, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatPaginatorModule],
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatChipsModule, MatIconModule, FilterSelectorComponent, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatPaginatorModule, HumanizePipe],
     styleUrl: './filter-grid.component.css',
     template: `
     <div>
@@ -41,7 +42,7 @@ import { updateArrayItem } from '../../../infrastructure/arrayHelper';
                                     [selected]="filterField.isSelected"
                                     (click)="handleToggleFilterField(filterField)"
                                     color="warm">
-                                    {{filterField.name}}
+                                    {{filterField.name | humanize}}
                                 </mat-chip-option>
                             }
                             </mat-chip-listbox>
@@ -76,7 +77,7 @@ import { updateArrayItem } from '../../../infrastructure/arrayHelper';
         <div>
             <table mat-table [dataSource]="filterGridState.filterResults?.items || []">
                 <ng-container *ngFor="let col of displayedColumns" [matColumnDef]=col>
-                    <th mat-header-cell *matHeaderCellDef>{{col}}</th>
+                    <th mat-header-cell *matHeaderCellDef>{{col | humanize}}</th>
                     <td mat-cell *matCellDef="let element">{{element[col]}}</td>
                 </ng-container>
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

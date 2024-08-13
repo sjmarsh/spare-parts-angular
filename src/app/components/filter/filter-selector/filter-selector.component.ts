@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
-import { MatInput, MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -9,31 +9,32 @@ import FilterField from '../types/filterField';
 import FilterLine from '../types/filterLine';
 import { NamedFilterOperator, nameFilterOperatorsForStrings, namedFilterOperatorsForDatesAndNumbers } from '../types/filterOperators';
 import FilterFieldType from '../types/filterFieldType';
+import { HumanizePipe } from '../../../infrastructure/humanizePipe';
 
 @Component({
     selector: 'app-filter-selector',
     standalone: true,
-    imports: [CommonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
+    imports: [CommonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, HumanizePipe],
     styleUrl: './filter-selector.component.css',
     template: `
     <div>
         <mat-form-field>
             <mat-label>Field</mat-label>
             <mat-select name="field" formControlName="selectedField" [(value)]="selectedField.id" (selectionChange)="handleFieldChanged($event)">
-                <mat-option *ngFor="let field of fields" [value]="field.id">{{field.name}}</mat-option>
+                <mat-option *ngFor="let field of fields" [value]="field.id">{{field.name | humanize }}</mat-option>
             </mat-select>       
         </mat-form-field>
         <mat-form-field>
             <mat-label>Operator</mat-label>
             <mat-select name="operator" formControlName="selectedOperator" [(value)]="selectedOperator" (selectionChange)="handleOperatorChanged($event)">
-                <mat-option *ngFor="let operator of operators" [value]="operator">{{operator.name}}</mat-option>
+                <mat-option *ngFor="let operator of operators" [value]="operator">{{operator.name | humanize }}</mat-option>
             </mat-select>       
         </mat-form-field>
         <mat-form-field>
             <mat-label>Value</mat-label>
             <ng-container *ngIf="selectedFieldIsEnumType(); else notAnEnum ">
                 <mat-select name="value" formControlName="value" [(value)]="value" (selectionChange)="handleEnumValueChanged($event)">
-                    <mat-option *ngFor="let enumItem of getEnumItems(selectedField.enumType)" [value]="enumItem">{{enumItem}}</mat-option>
+                    <mat-option *ngFor="let enumItem of getEnumItems(selectedField.enumType)" [value]="enumItem">{{enumItem | humanize }}</mat-option>
                 </mat-select>
             </ng-container>
             <ng-template #notAnEnum>
