@@ -82,6 +82,7 @@ import { updateArrayItem } from '../../../infrastructure/arrayHelper';
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
+                        <!--TODO PAGINATOR-->
         </div>
 
     </div>
@@ -203,7 +204,6 @@ export class FilterGridComponent<T> {
     }
 
     getDisplayColumns = () : Array<string> => {
-        // todo - this needs to better handle duplicate column names
-        return [... new Set(this.filterFields.filter(f => f.isSelected === true).map(f => f.name))];
+        return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName === undefined || f.parentFieldName?.length == 0)).map(f => f.name))];
     }
 }
