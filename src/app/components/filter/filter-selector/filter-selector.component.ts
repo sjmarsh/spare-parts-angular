@@ -19,20 +19,20 @@ import FilterFieldType from '../types/filterFieldType';
     <div>
         <mat-form-field>
             <mat-label>Field</mat-label>
-            <mat-select name="field" formControlName="selectedField" (selectionChange)="handleFieldChanged($event)">
+            <mat-select name="field" formControlName="selectedField" [(value)]="selectedField.id" (selectionChange)="handleFieldChanged($event)">
                 <mat-option *ngFor="let field of fields" [value]="field.id">{{field.name}}</mat-option>
             </mat-select>       
         </mat-form-field>
         <mat-form-field>
             <mat-label>Operator</mat-label>
-            <mat-select name="operator" formControlName="selectedOperator" (selectionChange)="handleOperatorChanged($event)">
+            <mat-select name="operator" formControlName="selectedOperator" [(value)]="selectedOperator" (selectionChange)="handleOperatorChanged($event)">
                 <mat-option *ngFor="let operator of operators" [value]="operator">{{operator.name}}</mat-option>
             </mat-select>       
         </mat-form-field>
         <mat-form-field>
             <mat-label>Value</mat-label>
             <ng-container *ngIf="selectedFieldIsEnumType(); else notAnEnum ">
-                <mat-select name="value" formControlName="value" (selectionChange)="handleEnumValueChanged($event)">
+                <mat-select name="value" formControlName="value" [(value)]="value" (selectionChange)="handleEnumValueChanged($event)">
                     <mat-option *ngFor="let enumItem of getEnumItems(selectedField.enumType)" [value]="enumItem">{{enumItem}}</mat-option>
                 </mat-select>
             </ng-container>
@@ -95,7 +95,9 @@ export class FilterSelectorComponent {
 
     handleFieldChanged = (e: MatSelectChange) => {     
         if(e && e.value && this.fields && this.filterLine && this.onFilterLineChanged) {
+            console.log("selectedValue: " + JSON.stringify(e.value));
             this.selectedField = this.fields.find(f => f.id === e.value) ?? this.selectedField;
+            console.log(this.selectedField);
             this.filterLine = {...this.filterLine, selectedField: this.selectedField};
             this.onFilterLineChanged(this.filterLine);
         }
