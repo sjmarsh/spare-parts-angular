@@ -95,9 +95,7 @@ export class FilterSelectorComponent {
 
     handleFieldChanged = (e: MatSelectChange) => {     
         if(e && e.value && this.fields && this.filterLine && this.onFilterLineChanged) {
-            console.log("selectedValue: " + JSON.stringify(e.value));
             this.selectedField = this.fields.find(f => f.id === e.value) ?? this.selectedField;
-            console.log(this.selectedField);
             this.filterLine = {...this.filterLine, selectedField: this.selectedField};
             this.onFilterLineChanged(this.filterLine);
         }
