@@ -22,6 +22,7 @@ import GraphQLRequest from '../types/graphQLRequest';
 import { HumanizePipe } from '../../../infrastructure/humanizePipe';
 import PageOffset from '../types/pageOffset';
 import { updateArrayItem } from '../../../infrastructure/arrayHelper';
+import TableSettings from '../../../constants/tableSettings';
 
 @Component({
     selector: 'app-filter-grid',
@@ -83,7 +84,15 @@ import { updateArrayItem } from '../../../infrastructure/arrayHelper';
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-                        <!--TODO PAGINATOR-->
+            <mat-paginator
+                (page)="handlePageEvent($event)"
+                [length]="totalItemCount"
+                [pageSize]="pageSize"
+                [pageIndex]="currentPage"
+                [showFirstLastButtons]="true"
+                aria-label="Search results"
+            >
+            </mat-paginator>
         </div>
 
     </div>
@@ -97,13 +106,17 @@ export class FilterGridComponent<T> {
     @Input({required: true}) triggerServiceCall?: (graphQLRequest: GraphQLRequest) => void | null;
     @Input({required: true}) onFilterStateChanged?: (filterGridState: FilterGridState<T>) => void | null;
         
-    PAGE_SIZE = 10;
     MAX_FILTER_LINE_COUNT = 5;
 
     filterFields: Array<FilterField>
     filterLines: Array<FilterLine>
     filterFormGroup?: FormGroup
     displayedColumns: Array<string>
+
+    totalItemCount: number = 0
+    pageSize: number = TableSettings.PageSize
+    currentPage?: number | null = null
+   
 
     constructor(private graphQLBuilder: GraphQLBuilder) {
         this.filterFields = [];
@@ -189,16 +202,21 @@ export class FilterGridComponent<T> {
         }
     }
 
-    search = (currentPage?: number | null) => {
+    search = () => {
         // todo validate
 
         if(this.filterGridState && this.triggerServiceCall) {
-            const currentResultPage = currentPage ?? this.filterGridState.currentResultPage;
-            const pageOffset = { skip: currentResultPage * this.PAGE_SIZE - this.PAGE_SIZE, take: this.PAGE_SIZE } as PageOffset;
+            const currentResultPage = this.currentPage ?? this.filterGridState.currentResultPage;
+            const pageOffset = { skip: currentResultPage * TableSettings.PageSize - TableSettings.PageSize, take: TableSettings.PageSize } as PageOffset;
             const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
             this.triggerServiceCall(graphQLRequest);
         }
     }
+
+    handlePageEvent = (e: PageEvent) => {
+        this.currentPage = e.pageIndex;
+        this.search();
+      }
 
     handleValidSubmit = () : void => {
         this.search();
