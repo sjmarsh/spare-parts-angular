@@ -38,6 +38,11 @@ mat-sidenav-content{
   }
 }
 
+.mat-drawer-content {
+  height: 95% !important;
+  overflow-y: scroll !important;
+}
+
 .expanded {
   width: 250px;
   height: 300px;

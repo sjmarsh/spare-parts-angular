@@ -75,25 +75,30 @@ import TableSettings from '../../../constants/tableSettings';
                 </details>
             </div>
         </ng-container>
-        <div>
-            <table mat-table [dataSource]="filterGridState.filterResults?.items || []">
-                <ng-container *ngFor="let col of displayedColumns" [matColumnDef]=col>
-                    <th mat-header-cell *matHeaderCellDef>{{col | humanize}}</th>
-                    <td mat-cell *matCellDef="let element">{{element[col]}}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            <mat-paginator
-                (page)="handlePageEvent($event)"
-                [length]="totalItemCount"
-                [pageSize]="pageSize"
-                [pageIndex]="currentPage"
-                [showFirstLastButtons]="true"
-                aria-label="Search results"
-            >
-            </mat-paginator>
-        </div>
+        <ng-container *ngIf="filterGridState.filterResults?.items">
+            <div class="detail-margin">
+                <details open="true">
+                <summary>Results</summary>
+                    <table mat-table [dataSource]="filterGridState.filterResults?.items || []">
+                        <ng-container *ngFor="let col of displayedColumns" [matColumnDef]=col>
+                            <th mat-header-cell *matHeaderCellDef>{{col | humanize}}</th>
+                            <td mat-cell *matCellDef="let element">{{element[col]}}</td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                    <mat-paginator
+                        (page)="handlePageEvent($event)"
+                        [length]="totalItemCount"
+                        [pageSize]="pageSize"
+                        [pageIndex]="currentPage"
+                        [showFirstLastButtons]="true"
+                        aria-label="Search results"
+                    >
+                    </mat-paginator>
+                </details>
+            </div>
+        </ng-container>
 
     </div>
     `
