@@ -89,7 +89,7 @@ import TableSettings from '../../../constants/tableSettings';
                     </table>
                     <mat-paginator
                         (page)="handlePageEvent($event)"
-                        [length]="totalItemCount"
+                        [length]="filterGridState.filterResults?.totalCount ?? 0"
                         [pageSize]="pageSize"
                         [pageIndex]="currentPage"
                         [showFirstLastButtons]="true"
@@ -117,8 +117,7 @@ export class FilterGridComponent<T> {
     filterLines: Array<FilterLine>
     filterFormGroup?: FormGroup
     displayedColumns: Array<string>
-
-    totalItemCount: number = 0
+    
     pageSize: number = TableSettings.PageSize
     currentPage?: number | null = null
    
@@ -126,7 +125,7 @@ export class FilterGridComponent<T> {
     constructor(private graphQLBuilder: GraphQLBuilder) {
         this.filterFields = [];
         this.filterLines = [];
-        this.filterGridState = { filterFields: this.filterFields, filterLines: this.filterLines, isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
+        this.filterGridState =  { filterFields: this.filterFields, filterLines: this.filterLines, isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
         this.rootGraphQLField = '';
         this.displayedColumns = [];
         this.initFilters();
@@ -137,6 +136,7 @@ export class FilterGridComponent<T> {
     }
 
     initFilters = () => {
+        console.log('InitFilters')
         this.filterFields = this.filterGridState?.filterFields || [];
         this.filterLines = this.filterGridState?.filterLines || [];
         this.filterFormGroup = this.initForm(this.filterLines);
@@ -159,6 +159,7 @@ export class FilterGridComponent<T> {
     }
 
     updateFilterGridState = (filterGridState: FilterGridState<T>) => {
+        console.log('UpdateFilterGridState')
         if(this.onFilterStateChanged) {
             return this.onFilterStateChanged(filterGridState);
         }        
@@ -209,7 +210,7 @@ export class FilterGridComponent<T> {
 
     search = () => {
         // todo validate
-
+        console.log('Search')
         if(this.filterGridState && this.triggerServiceCall) {
             const currentResultPage = this.currentPage ?? this.filterGridState.currentResultPage;
             const pageOffset = { skip: currentResultPage * TableSettings.PageSize - TableSettings.PageSize, take: TableSettings.PageSize } as PageOffset;

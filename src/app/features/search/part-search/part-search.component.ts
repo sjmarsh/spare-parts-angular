@@ -37,13 +37,13 @@ export class PartSearchComponent {
         this.store.select(state => state.partSearch)
             .subscribe(s => {
                 if(s) {
-                    console.log('State = ' + JSON.stringify(s));
+                    console.log('part-search subs')
                     this.filterGridState = s.filterGridState;
                     if(s && s.status == FetchStatus.Idle) {
                        // refetch
                     }
                     if(s.status === FetchStatus.Succeeded){
-                        
+                        console.log('part-search success')
                     //   
                     }
                     if(s.status === FetchStatus.Failed){
