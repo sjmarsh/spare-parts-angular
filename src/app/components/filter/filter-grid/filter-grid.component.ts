@@ -119,9 +119,8 @@ export class FilterGridComponent<T> {
     displayedColumns: Array<string>
     
     pageSize: number = TableSettings.PageSize
-    currentPage?: number | null = null
-   
-
+    currentPage: number = 0
+    
     constructor(private graphQLBuilder: GraphQLBuilder) {
         this.filterFields = [];
         this.filterLines = [];
@@ -139,6 +138,7 @@ export class FilterGridComponent<T> {
         console.log('InitFilters')
         this.filterFields = this.filterGridState?.filterFields || [];
         this.filterLines = this.filterGridState?.filterLines || [];
+        this.currentPage = this.filterGridState.currentResultPage;
         this.filterFormGroup = this.initForm(this.filterLines);
         this.displayedColumns = this.getDisplayColumns();
     }
@@ -212,7 +212,9 @@ export class FilterGridComponent<T> {
         // todo validate
         console.log('Search')
         if(this.filterGridState && this.triggerServiceCall) {
-            const currentResultPage = this.currentPage ?? this.filterGridState.currentResultPage;
+            console.log('search called. state current result page: ' + this.currentPage)
+            const currentResultPage = this.currentPage + 1;
+            console.log('search with currentResultPage: ' + currentResultPage)
             const pageOffset = { skip: currentResultPage * TableSettings.PageSize - TableSettings.PageSize, take: TableSettings.PageSize } as PageOffset;
             const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
             this.triggerServiceCall(graphQLRequest);
@@ -220,7 +222,9 @@ export class FilterGridComponent<T> {
     }
 
     handlePageEvent = (e: PageEvent) => {
+        console.log('handle page: ' + e.pageIndex)
         this.currentPage = e.pageIndex;
+        this.updateFilterGridState({...this.filterGridState, currentResultPage: this.currentPage });
         this.search();
       }
 

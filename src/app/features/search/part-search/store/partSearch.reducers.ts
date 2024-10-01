@@ -19,7 +19,7 @@ const initialState : PartSearchState = {
     filterGridState: {
         filterFields: partFields(),
         filterLines: new Array<FilterLine>( { id: getUUid(), selectedField: partFields()[0], selectedOperator: FilterOperator.Equal, value: '' } as FilterLine ),
-        currentResultPage: 1,
+        currentResultPage: 0,
         isFieldsSelectionVisible: true,
         isFiltersEntryVisible: true,
         filterResults: { items: new Array<Part>(), pageInfo: { hasNextPage: false } as PageInfo, totalCount: 0 } as PagedData<Part>
