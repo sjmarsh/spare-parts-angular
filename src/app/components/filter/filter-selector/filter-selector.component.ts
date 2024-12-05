@@ -38,7 +38,7 @@ import { HumanizePipe } from '../../../infrastructure/humanizePipe';
                 </mat-select>
             </ng-container>
             <ng-template #notAnEnum>
-                <input matNativeControl formControlName="value" [value]="value" (keyup)="handleValueChanged($event)"/>
+                <input matNativeControl formControlName="value" [value]="value" (blur)="handleValueBlur($event)"/>
             </ng-template>
             
         </mat-form-field>
@@ -131,15 +131,15 @@ export class FilterSelectorComponent {
         }
     }
 
-    handleValueChanged = (e: KeyboardEvent) => {
-        let ke = e as KeyboardEvent;
-        if(ke && ke.target && ke.target) {
-            let t = ke.target as HTMLInputElement;
+    handleValueBlur = (e: FocusEvent) => {
+        let fe = e as FocusEvent;
+        if(fe && fe.target) {
+            let t = fe.target as HTMLInputElement;
             if(this.filterLine && this.onFilterLineChanged && t.value) {
                 this.filterLine = {...this.filterLine, value: t.value};
                 this.onFilterLineChanged(this.filterLine);
-            }    
-        }        
+            }   
+        }
     }
 
 }
