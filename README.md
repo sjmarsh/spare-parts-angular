@@ -8,13 +8,20 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 - Angular Material
 - NgRx
 
-** Remeber to setup local dev certificates in a \certs folder using "mkcert localhost" command.
+** If starting in a new dev environment remeber to setup local dev certificates in a \certs folder using "mkcert localhost" command.
 
+## Outstanding Tasks (TODO):
+###  - Part Search
+ - Fields Chips not disabled for fields that have been used in the filters.  
+ - Fields Chips check marks are not working as expected.  Need to override out-of-the-box behaviour.
+ - Search Results Grid should have expanders to reveal Part Attributes (if they exist for the part).
+ - Improve Test Coverage.
 
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `ng serve --ssl --open` for a dev server.  This should automatically launch the app in the default browser (with `https://localhost:4200/`). The application will automatically reload if you change any of the source files.
+
 
 ## Code scaffolding
 
