@@ -79,13 +79,38 @@ import TableSettings from '../../../constants/tableSettings';
             <div class="detail-margin">
                 <details open="true">
                 <summary>Results</summary>
-                    <table mat-table [dataSource]="filterGridState.filterResults?.items || []">
+                    <table mat-table [dataSource]="filterGridState.filterResults?.items || []" multiTemplateDataRows>
                         <ng-container *ngFor="let col of displayedColumns" [matColumnDef]=col>
                             <th mat-header-cell *matHeaderCellDef>{{col | humanize}}</th>
-                            <td mat-cell *matCellDef="let element">{{element[col]}}</td>
+                            <td mat-cell *matCellDef="let element">{{element.item[col]}}</td>
                         </ng-container>
+                       
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        
+                        <!-- Detail row -->
+                        <!-- Ref: https://stackblitz.com/edit/angular-nested-mat-table?file=app%2Ftable-expandable-rows-example.html -->
+                        <ng-container matColumnDef="expandedDetail" >
+                            <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+                                <div class="example-element-detail" *ngIf="element.details.length > 0" >
+                                    <table #innerTables mat-table [dataSource]="element.details">
+                                        <ng-container matColumnDef="{{innerColumn}}" *ngFor="let innerColumn of displayedDetailColumns">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{innerColumn}} </th>
+                                        <td mat-cell *matCellDef="let element"> {{element[innerColumn]}} </td>
+                                        </ng-container>
+                                        <tr mat-header-row *matHeaderRowDef="displayedDetailColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedDetailColumns;"></tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- <tr mat-header-row *matHeaderRowDef="displayedDetailColumns"></tr> -->
+                        <!-- <tr mat-row *matRowDef="let element; columns: displayedDetailColumns;" [class.example-element-row]="element.details.length"
+                        [class.example-expanded-row]="displayedDetailColumns === element" (click)="toggleRow(element)">
+                        </tr> -->
+                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+
                     </table>
                     <mat-paginator
                         (page)="handlePageEvent($event)"
@@ -104,19 +129,20 @@ import TableSettings from '../../../constants/tableSettings';
     `
 })
 
-export class FilterGridComponent<T> {
+export class FilterGridComponent<T, TD> {
 
-    @Input({required: true}) filterGridState: FilterGridState<T>;
+    @Input({required: true}) filterGridState: FilterGridState<T, TD>;
     @Input({required: true}) rootGraphQLField: string;
     @Input({required: true}) triggerServiceCall?: (graphQLRequest: GraphQLRequest) => void | null;
-    @Input({required: true}) onFilterStateChanged?: (filterGridState: FilterGridState<T>) => void | null;
-        
+    @Input({required: true}) onFilterStateChanged?: (filterGridState: FilterGridState<T, TD>) => void | null;
+            
     MAX_FILTER_LINE_COUNT = 5;
 
     filterFields: Array<FilterField>
     filterLines: Array<FilterLine>
     filterFormGroup?: FormGroup
     displayedColumns: Array<string>
+    displayedDetailColumns: Array<string>
     
     pageSize: number = TableSettings.PageSize
     currentPage: number = 0
@@ -127,6 +153,7 @@ export class FilterGridComponent<T> {
         this.filterGridState =  { filterFields: this.filterFields, filterLines: this.filterLines, isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
         this.rootGraphQLField = '';
         this.displayedColumns = [];
+        this.displayedDetailColumns = [];
         this.initFilters();
     }
 
@@ -141,6 +168,7 @@ export class FilterGridComponent<T> {
         this.currentPage = this.filterGridState.currentResultPage;
         this.filterFormGroup = this.initForm(this.filterLines);
         this.displayedColumns = this.getDisplayColumns();
+        this.displayedDetailColumns = ['name', 'description', 'value'];
     }
 
     initForm = (filterLines: Array<FilterLine>): FormGroup => {
@@ -158,8 +186,7 @@ export class FilterGridComponent<T> {
         return new FormGroup({ items: itemArray });
     }
 
-    updateFilterGridState = (filterGridState: FilterGridState<T>) => {
-        console.log('UpdateFilterGridState')
+    updateFilterGridState = (filterGridState: FilterGridState<T, TD>) => {
         if(this.onFilterStateChanged) {
             return this.onFilterStateChanged(filterGridState);
         }        
@@ -177,6 +204,7 @@ export class FilterGridComponent<T> {
                     this.updateFilterGridState(state);
                     this.filterFields = state.filterFields;
                     this.displayedColumns = this.getDisplayColumns();
+                    this.displayedDetailColumns = ['name', 'description', 'value'];
                 }
             }
     }
@@ -212,9 +240,7 @@ export class FilterGridComponent<T> {
         // todo validate
         console.log('Search')
         if(this.filterGridState && this.triggerServiceCall) {
-            console.log('search called. state current result page: ' + this.currentPage)
             const currentResultPage = this.currentPage + 1;
-            console.log('search with currentResultPage: ' + currentResultPage)
             const pageOffset = { skip: currentResultPage * TableSettings.PageSize - TableSettings.PageSize, take: TableSettings.PageSize } as PageOffset;
             const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
             this.triggerServiceCall(graphQLRequest);
@@ -235,4 +261,11 @@ export class FilterGridComponent<T> {
     getDisplayColumns = () : Array<string> => {
         return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName === undefined || f.parentFieldName?.length == 0)).map(f => f.name))];
     }
+
+    toggleRow(element: TD) {
+        //element.addresses && (element.addresses as MatTableDataSource<Address>).data.length ? (this.expandedElement = this.expandedElement === element ? null : element) : null;
+        //this.cd.detectChanges();
+        //this.innerTables.forEach((table, index) => (table.dataSource as MatTableDataSource<Address>).sort = this.innerSort.toArray()[index]);
+      }
+    
 }

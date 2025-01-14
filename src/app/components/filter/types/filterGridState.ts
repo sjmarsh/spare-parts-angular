@@ -1,13 +1,13 @@
 import FilterField from "./filterField";
 import FilterLine from "./filterLine";
-import { PagedData } from "./pagedData";
+import { ReportData } from "./reportData";
 
-interface FilterGridState<T> {
+interface FilterGridState<T, TD> {
     filterFields: Array<FilterField>;
     filterLines: Array<FilterLine>;
     isFieldsSelectionVisible: boolean;
     isFiltersEntryVisible: boolean;
-    filterResults?: PagedData<T> | null;
+    filterResults?: ReportData<T, TD> | null;
     currentResultPage: number;
 }
 

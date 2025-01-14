@@ -11,6 +11,7 @@ import { PagedData, PageInfo } from '../../../components/filter/types/pagedData'
 import { partSearch, partSearchSuccess, partSearchFail, updateFilterGridState } from './store/partSearch.actions';
 import { PartSearchState } from './store/partSearch.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
+import PartAttribute from '../../parts/types/PartAttribute';
 
 @Component({
     selector: 'app-part-search',
@@ -27,7 +28,7 @@ import FetchStatus from '../../../constants/fetchStatus';
 
 export class PartSearchComponent {
 
-    filterGridState: FilterGridState<Part>
+    filterGridState: FilterGridState<Part, PartAttribute>
 
     constructor(private store: Store<{partSearch: PartSearchState}>) {
         this.filterGridState = { filterFields: [], filterLines: [], isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
@@ -55,7 +56,7 @@ export class PartSearchComponent {
     }
     
 
-    handleOnFilterGridStateChanged = (updatedState: FilterGridState<Part>)  => {
+    handleOnFilterGridStateChanged = (updatedState: FilterGridState<Part, PartAttribute>)  => {
         this.store.dispatch(updateFilterGridState({updatedState}));
     }
 
