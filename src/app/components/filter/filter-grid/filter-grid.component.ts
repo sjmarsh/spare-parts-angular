@@ -84,7 +84,6 @@ import TableSettings from '../../../constants/tableSettings';
                             <th mat-header-cell *matHeaderCellDef>{{col | humanize}}</th>
                             <td mat-cell *matCellDef="let element">{{element.item[col]}}</td>
                         </ng-container>
-                       
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                         
@@ -95,8 +94,8 @@ import TableSettings from '../../../constants/tableSettings';
                                 <div class="example-element-detail" *ngIf="element.details.length > 0" >
                                     <table #innerTables mat-table [dataSource]="element.details">
                                         <ng-container matColumnDef="{{innerColumn}}" *ngFor="let innerColumn of displayedDetailColumns">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{innerColumn}} </th>
-                                        <td mat-cell *matCellDef="let element"> {{element[innerColumn]}} </td>
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{innerColumn | humanize}} </th>
+                                            <td mat-cell *matCellDef="let element"> {{element[innerColumn]}} </td>
                                         </ng-container>
                                         <tr mat-header-row *matHeaderRowDef="displayedDetailColumns"></tr>
                                         <tr mat-row *matRowDef="let row; columns: displayedDetailColumns;"></tr>
@@ -168,7 +167,7 @@ export class FilterGridComponent<T, TD> {
         this.currentPage = this.filterGridState.currentResultPage;
         this.filterFormGroup = this.initForm(this.filterLines);
         this.displayedColumns = this.getDisplayColumns();
-        this.displayedDetailColumns = ['name', 'description', 'value'];
+        this.displayedDetailColumns = this.getDetailDisplayColumns();
     }
 
     initForm = (filterLines: Array<FilterLine>): FormGroup => {
@@ -204,7 +203,7 @@ export class FilterGridComponent<T, TD> {
                     this.updateFilterGridState(state);
                     this.filterFields = state.filterFields;
                     this.displayedColumns = this.getDisplayColumns();
-                    this.displayedDetailColumns = ['name', 'description', 'value'];
+                    this.displayedDetailColumns = this.getDetailDisplayColumns();
                 }
             }
     }
@@ -260,6 +259,10 @@ export class FilterGridComponent<T, TD> {
 
     getDisplayColumns = () : Array<string> => {
         return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName === undefined || f.parentFieldName?.length == 0)).map(f => f.name))];
+    }
+
+    getDetailDisplayColumns = () : Array<string> => {
+        return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName && f.parentFieldName.length > 0)).map(f => f.name))];
     }
 
     toggleRow(element: TD) {
