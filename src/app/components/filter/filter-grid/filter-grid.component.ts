@@ -86,12 +86,19 @@ import { DataRow } from '../types/reportData';
                                 <th mat-header-cell *matHeaderCellDef >{{col | humanize}}</th>
                                 <td mat-cell *matCellDef="let element">{{element.item[col]}}</td>
                             </ng-container>
-                            <ng-container *ngIf="col == 'detailToggle' ">
+                            <ng-container *ngIf="col == 'detailToggle'">
                                 <th mat-header-cell *matHeaderCellDef >Details</th>
                                 <td mat-cell *matCellDef="let element">
-                                    <button mat-icon-button aria-label="Expand Details" (click)="toggleDetail(element)">
-                                        <mat-icon>unfold_more</mat-icon>
-                                    </button>
+                                    <ng-container *ngIf="element.details.length && !element.isDetailsVisible">
+                                        <button mat-icon-button aria-label="Expand Details" (click)="toggleDetail(element)">
+                                            <mat-icon>unfold_more</mat-icon>
+                                        </button>
+                                    </ng-container>
+                                    <ng-container *ngIf="element.details.length && element.isDetailsVisible">
+                                        <button mat-icon-button aria-label="Hide Details" (click)="toggleDetail(element)">
+                                            <mat-icon>unfold_less</mat-icon>
+                                        </button>
+                                    </ng-container>
                                 </td>
                             </ng-container>
                         </ng-container>
@@ -100,22 +107,22 @@ import { DataRow } from '../types/reportData';
                        
                         <!-- Detail row -->
                         <!-- Ref: https://stackblitz.com/edit/angular-nested-mat-table?file=app%2Ftable-expandable-rows-example.html -->
-                        <ng-container matColumnDef="expandedDetail" >
+                        <ng-container matColumnDef="expandedDetail" class="test-cont">
                             <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
                                 <div class="element-detail" *ngIf="element.details.length > 0 && element.isDetailsVisible" >
-                                    <p class="element-detail-header">Attributes<p>
-                                    <table #innerTables mat-table [dataSource]="element.details">
+                                    <p class="element-detail-header">Details<p>
+                                    <table #innerTables mat-table [dataSource]="element.details" class="detail-table">
                                         <ng-container matColumnDef="{{innerColumn}}" *ngFor="let innerColumn of displayedDetailColumns">
                                             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{innerColumn | humanize}} </th>
                                             <td mat-cell *matCellDef="let element"> {{element[innerColumn]}} </td>
                                         </ng-container>
                                         <tr mat-header-row *matHeaderRowDef="displayedDetailColumns"></tr>
-                                        <tr mat-row *matRowDef="let row; columns: displayedDetailColumns;"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedDetailColumns;" class="test-class"></tr>
                                     </table>
                                 </div>
                             </td>
                         </ng-container>                        
-                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" [class.collapsed-detail-row]="!row.isDetailsVisible"  [class.expanded-detail-row]="row.isDetailsVisible"></tr>
                     </table>
                     <mat-paginator
                         (page)="handlePageEvent($event)"

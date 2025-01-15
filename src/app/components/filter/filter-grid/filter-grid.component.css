@@ -5,3 +5,15 @@
 .element-detail-header {
     font-weight: 500;
 }
+
+.collapsed-detail-row:not(.expanded-detail-row) {
+    height: 0;
+}
+
+.expanded-detail-row {
+    background-color: lightgray;
+}
+
+.detail-table {
+    margin-bottom: 10px;
+}
