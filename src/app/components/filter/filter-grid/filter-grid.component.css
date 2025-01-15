@@ -1,3 +1,7 @@
-.detail-margin {
+.results-margin {
     margin-top: 12px;
+}
+
+.element-detail-header {
+    font-weight: 500;
 }

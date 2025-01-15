@@ -76,22 +76,34 @@ import TableSettings from '../../../constants/tableSettings';
             </div>
         </ng-container>
         <ng-container *ngIf="filterGridState.filterResults?.items">
-            <div class="detail-margin">
+            <div class="results-margin">
                 <details open="true">
                 <summary>Results</summary>
                     <table mat-table [dataSource]="filterGridState.filterResults?.items || []" multiTemplateDataRows>
                         <ng-container *ngFor="let col of displayedColumns" [matColumnDef]=col>
-                            <th mat-header-cell *matHeaderCellDef>{{col | humanize}}</th>
-                            <td mat-cell *matCellDef="let element">{{element.item[col]}}</td>
+                            <ng-container *ngIf="col !== 'detailToggle' ">
+                                <th mat-header-cell *matHeaderCellDef >{{col | humanize}}</th>
+                                <td mat-cell *matCellDef="let element">{{element.item[col]}}</td>
+                            </ng-container>
+                            <ng-container *ngIf="col == 'detailToggle' ">
+                                <th mat-header-cell *matHeaderCellDef >Details</th>
+                                <td mat-cell *matCellDef="let element">
+                                    <button mat-icon-button aria-label="Expand Details" (click)="toggleDetail(element)">
+                                        <mat-icon>unfold_more</mat-icon>
+                                    </button>
+                                </td>
+                            </ng-container>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                        
+                       
+
                         <!-- Detail row -->
                         <!-- Ref: https://stackblitz.com/edit/angular-nested-mat-table?file=app%2Ftable-expandable-rows-example.html -->
                         <ng-container matColumnDef="expandedDetail" >
                             <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-                                <div class="example-element-detail" *ngIf="element.details.length > 0" >
+                                <div class="element-detail" *ngIf="element.details.length > 0" >
+                                    <p class="element-detail-header">Attributes<p>
                                     <table #innerTables mat-table [dataSource]="element.details">
                                         <ng-container matColumnDef="{{innerColumn}}" *ngFor="let innerColumn of displayedDetailColumns">
                                             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{innerColumn | humanize}} </th>
@@ -108,7 +120,7 @@ import TableSettings from '../../../constants/tableSettings';
                         <!-- <tr mat-row *matRowDef="let element; columns: displayedDetailColumns;" [class.example-element-row]="element.details.length"
                         [class.example-expanded-row]="displayedDetailColumns === element" (click)="toggleRow(element)">
                         </tr> -->
-                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
 
                     </table>
                     <mat-paginator
@@ -258,17 +270,18 @@ export class FilterGridComponent<T, TD> {
     }
 
     getDisplayColumns = () : Array<string> => {
-        return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName === undefined || f.parentFieldName?.length == 0)).map(f => f.name))];
+        let columns =  [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName === undefined || f.parentFieldName?.length == 0)).map(f => f.name))];
+        columns.push('detailToggle');
+        return columns;
     }
 
     getDetailDisplayColumns = () : Array<string> => {
         return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName && f.parentFieldName.length > 0)).map(f => f.name))];
     }
 
-    toggleRow(element: TD) {
-        //element.addresses && (element.addresses as MatTableDataSource<Address>).data.length ? (this.expandedElement = this.expandedElement === element ? null : element) : null;
-        //this.cd.detectChanges();
-        //this.innerTables.forEach((table, index) => (table.dataSource as MatTableDataSource<Address>).sort = this.innerSort.toArray()[index]);
-      }
+    toggleDetail(element: T) {
+        console.log('Toggle Detail')    
+        console.log(element)
+    }
     
 }
