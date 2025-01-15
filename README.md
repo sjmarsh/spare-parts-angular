@@ -13,6 +13,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ---
 
 ## Outstanding Tasks (TODO):
+### - Parts Detail
+ - Fix. Add new Part dialog shows blank if haven't already edited an existing part.
 ###  - Nav Menu 
  - Nav Menu should expand on large screen by default.  
  - Nav Menu sizing needs fixing on large screen (seems OK for Mobile).
@@ -29,7 +31,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `ng serve --ssl --open` for a dev server.  This should automatically launch the app in the default browser (with `https://localhost:4200/`). The application will automatically reload if you change any of the source files.
+Run `ng serve --ssl --open` for a dev server  (or just `npm start`).  This should automatically launch the app in the default browser (with `https://localhost:4200/`). The application will automatically reload if you change any of the source files.
 
 
 ## Code scaffolding
