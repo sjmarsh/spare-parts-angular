@@ -36,7 +36,7 @@ const getFilterResults = ({ parts: searchResult }: { parts: PartGraphQLResponseP
     if(searchResult)
     { 
         return {
-            items: searchResult.items.map(i => ({ item: i, details: i.attributes })),
+            items: searchResult.items.map(i => ({ id: getUUid(), item: i, details: i.attributes, isDetailsVisible: false })),
             pageInfo: searchResult.pageInfo,
             error: searchResult.error,
             totalCount: searchResult.totalCount

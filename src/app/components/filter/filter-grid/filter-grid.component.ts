@@ -23,6 +23,7 @@ import { HumanizePipe } from '../../../infrastructure/humanizePipe';
 import PageOffset from '../types/pageOffset';
 import { updateArrayItem } from '../../../infrastructure/arrayHelper';
 import TableSettings from '../../../constants/tableSettings';
+import { DataRow } from '../types/reportData';
 
 @Component({
     selector: 'app-filter-grid',
@@ -97,12 +98,11 @@ import TableSettings from '../../../constants/tableSettings';
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                        
-
                         <!-- Detail row -->
                         <!-- Ref: https://stackblitz.com/edit/angular-nested-mat-table?file=app%2Ftable-expandable-rows-example.html -->
                         <ng-container matColumnDef="expandedDetail" >
                             <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-                                <div class="element-detail" *ngIf="element.details.length > 0" >
+                                <div class="element-detail" *ngIf="element.details.length > 0 && element.isDetailsVisible" >
                                     <p class="element-detail-header">Attributes<p>
                                     <table #innerTables mat-table [dataSource]="element.details">
                                         <ng-container matColumnDef="{{innerColumn}}" *ngFor="let innerColumn of displayedDetailColumns">
@@ -114,14 +114,8 @@ import TableSettings from '../../../constants/tableSettings';
                                     </table>
                                 </div>
                             </td>
-                        </ng-container>
-
-                        <!-- <tr mat-header-row *matHeaderRowDef="displayedDetailColumns"></tr> -->
-                        <!-- <tr mat-row *matRowDef="let element; columns: displayedDetailColumns;" [class.example-element-row]="element.details.length"
-                        [class.example-expanded-row]="displayedDetailColumns === element" (click)="toggleRow(element)">
-                        </tr> -->
+                        </ng-container>                        
                         <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
-
                     </table>
                     <mat-paginator
                         (page)="handlePageEvent($event)"
@@ -279,9 +273,18 @@ export class FilterGridComponent<T, TD> {
         return [... new Set(this.filterFields.filter(f => f.isSelected === true && (f.parentFieldName && f.parentFieldName.length > 0)).map(f => f.name))];
     }
 
-    toggleDetail(element: T) {
-        console.log('Toggle Detail')    
-        console.log(element)
+    toggleDetail(row: DataRow<T, TD>) {
+        if(this.filterGridState.filterResults) {
+            
+            let item = {...row};
+            item.isDetailsVisible = !item.isDetailsVisible;
+
+            let filterResultsState = {...this.filterGridState.filterResults};
+            let updatedItems = updateArrayItem(filterResultsState.items, item);
+            filterResultsState.items = updatedItems;
+
+            this.updateFilterGridState({...this.filterGridState, filterResults:  filterResultsState});
+        }
     }
     
 }
