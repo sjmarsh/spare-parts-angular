@@ -113,7 +113,7 @@ import { createPart, updatePart, hideDetail } from '../store/parts.actions';
         </mat-card>
 
         
-        <button mat-flat-button color="primary" type="submit">Submit</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="!partForm.valid">Submit</button>
         <button mat-flat-button type="button" (click)="handleClose()" value="close">Close</button>
 
         <mat-error>{{errorMessage}}</mat-error>
@@ -153,6 +153,10 @@ export class PartDetailComponent {
     this.store.select(state => state.parts)
       .subscribe(s => {
         this.detailMode = s.mode;
+        if(s.status === FetchStatus.Idle) {
+          this.part = {...s.value};
+          this.partForm = this.initForm(this.part);
+        }
         if(s.status === FetchStatus.Succeeded){
           this.part = {...s.value};
           this.partForm = this.initForm(this.part);
@@ -213,6 +217,11 @@ export class PartDetailComponent {
       // todo better error handling
       throw('unable to submit null form')
     }
+    if(!this.partForm.valid) {
+      this.errorMessage = "Part is invalid.  Please fix highlighted errors before submitting";
+      return;
+    }
+
     const partToSubmit = this.partForm.value;
     partToSubmit.startDate = partToSubmit.startDate.length > 0 ? partToSubmit.startDate : null;
     partToSubmit.endDate = partToSubmit.endDate.length > 0 ? partToSubmit.endDate : null;

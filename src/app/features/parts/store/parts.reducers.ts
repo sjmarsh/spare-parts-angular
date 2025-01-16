@@ -21,9 +21,20 @@ export interface PartDetailState {
     error?: string | null
 }
 
+const emptyPart : Part = {
+    id: 0,
+    name: "",
+    description: "",
+    category: null,
+    weight: 0,
+    price: 0,
+    startDate: "",
+    attributes: new Array<PartAttribute>
+}
+
 const initialState : PartDetailState = {
     id: 0,
-    value: { attributes: new Array<PartAttribute> } as Part,
+    value: emptyPart,
     mode: DetailMode.Closed,
     status: FetchStatus.Idle,
     error: null
@@ -55,3 +66,4 @@ export const partReducer = createReducer(
         error: partResponse.message ?? 'An error occurred fetching part.'
     }))
 )
+

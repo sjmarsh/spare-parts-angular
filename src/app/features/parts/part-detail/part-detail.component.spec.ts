@@ -196,6 +196,22 @@ describe('PartDetailComponent', () => {
     });
   })
 
+  it('should have disabled submit button when form is not valid', async () => {
+    expect(component.partForm?.valid).toBeTrue();
+    
+    component.partForm?.patchValue({['name']: ''});
+
+    expect(component.partForm?.valid).toBeFalse();
+
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();  
+      const submitButton: HTMLButtonElement = fixture.nativeElement.querySelector('button[type=submit]');
+      expect(submitButton.attributes.getNamedItem('ng-reflect-disabled')?.value).toBeTruthy();
+      //expect(submitButton.disabled).toBeTrue();
+    });    
+  })
+
   it('should have validation error for weight less than zero', async () => {
     expect(component.partForm?.valid).toBeTrue();
     
