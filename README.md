@@ -14,7 +14,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Outstanding Tasks (TODO):
 ### - Parts Detail
- - Fix. Add new Part dialog shows blank if haven't already edited an existing part.
+ - ~~Fix. Add new Part dialog shows blank if haven't already edited an existing part.~~
 ###  - Nav Menu 
  - Nav Menu should expand on large screen by default.  
  - Nav Menu sizing needs fixing on large screen (seems OK for Mobile).
