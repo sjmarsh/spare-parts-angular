@@ -1,4 +1,4 @@
-import ChipColor from "../../chips/types/chipColor";
+import ChipColor from "../../chip-list/types/chipColor";
 
 interface FieldChipColor {
     parentName: string,

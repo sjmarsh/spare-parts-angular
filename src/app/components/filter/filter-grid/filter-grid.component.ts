@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
+import { ChipListComponent } from '../../chip-list/chip-list.component';
+import Chip from '../../chip-list/types/chip';
+import ChipColor from '../../chip-list/types/chipColor';
+import FieldChipColor from '../types/fieldChipColor';
 import { FilterSelectorComponent } from '../filter-selector/filter-selector.component';
 import FilterField from '../types/filterField';
 import FilterGridState from '../types/filterGridState';
@@ -24,11 +27,13 @@ import PageOffset from '../types/pageOffset';
 import { updateArrayItem } from '../../../infrastructure/arrayHelper';
 import TableSettings from '../../../constants/tableSettings';
 import { DataRow } from '../types/reportData';
+import humanizeString from 'humanize-string';
+import { randomInt } from '../../../infrastructure/randomHelper';
 
 @Component({
     selector: 'app-filter-grid',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatChipsModule, MatIconModule, FilterSelectorComponent, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatPaginatorModule, HumanizePipe],
+    imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatIconModule, ChipListComponent, FilterSelectorComponent, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatPaginatorModule, HumanizePipe],
     styleUrl: './filter-grid.component.css',
     template: `
     <div>
@@ -36,20 +41,7 @@ import { DataRow } from '../types/reportData';
             <div class="detail-margin">
                 <details open="true">
                     <summary>Fields</summary>
-                    <mat-card appearance="outlined">
-                        <mat-card-content>
-                            <mat-chip-listbox aria-label="Select Fields">
-                            @for (filterField of filterFields; track filterField) {
-                                <mat-chip-option 
-                                    [selected]="filterField.isSelected"
-                                    (click)="handleToggleFilterField(filterField)"
-                                    color="warm">
-                                    {{filterField.name | humanize}}
-                                </mat-chip-option>
-                            }
-                            </mat-chip-listbox>
-                        </mat-card-content>
-                    </mat-card>
+                    <app-chip-list [chips]="getChipFields()" [onToggleChip]="handleToggleField"></app-chip-list>
                 </details>
             </div>
         </ng-container>
@@ -150,6 +142,7 @@ export class FilterGridComponent<T, TD> {
             
     MAX_FILTER_LINE_COUNT = 5;
 
+    chipColors: Array<FieldChipColor>
     filterFields: Array<FilterField>
     filterLines: Array<FilterLine>
     filterFormGroup?: FormGroup
@@ -160,6 +153,7 @@ export class FilterGridComponent<T, TD> {
     currentPage: number = 0
     
     constructor(private graphQLBuilder: GraphQLBuilder) {
+        this.chipColors = [];
         this.filterFields = [];
         this.filterLines = [];
         this.filterGridState =  { filterFields: this.filterFields, filterLines: this.filterLines, isFieldsSelectionVisible: true, isFiltersEntryVisible: true, currentResultPage: 0 };
@@ -197,17 +191,34 @@ export class FilterGridComponent<T, TD> {
         }
         return new FormGroup({ items: itemArray });
     }
-
-    updateFilterGridState = (filterGridState: FilterGridState<T, TD>) => {
-        if(this.onFilterStateChanged) {
-            return this.onFilterStateChanged(filterGridState);
-        }        
+    
+    getChipColor = (filterField: FilterField) : ChipColor => {
+        if(!filterField.parentFieldName) {
+            return ChipColor.Default;
+        }
+        const existingColor = this.chipColors.find(f => f.parentName == filterField.parentFieldName);
+        if(existingColor) {
+            return existingColor.chipColor;
+        }
+        var colors = Object.values(ChipColor).filter(c => c !== ChipColor.Default);
+        var color = colors[randomInt(colors.length)];
+        this.chipColors = [...this.chipColors, { parentName: filterField.parentFieldName, chipColor: color}];
+        return color;
     }
 
-    handleToggleFilterField = (filterField: FilterField) => {
-        const isFilterSelected = this.filterLines.find(f => f.selectedField.id === filterField.id);
+    getChipFields = () : Array<Chip> => {
+        const chips = this.filterFields.map((f) => {
+            const chip : Chip = { id: f.id, name: humanizeString(f.name), tooltip: humanizeString(f.parentFieldName ?? ""), isActive: f.isSelected, color: this.getChipColor(f) }
+            return chip;
+        })
+        return chips;
+    }
+
+    handleToggleField = (chip: Chip) => {
+        if(chip) {
+            const isFilterSelected = this.filterLines.find(f => f.selectedField.id === chip.id);
             if(!isFilterSelected) {  // don't toggle chip if the filter is in use
-                let itemToToggle = this.filterFields.find(f => f.id === filterField.id);
+                let itemToToggle = this.filterFields.find(f => f.id === chip.id);
                 if(itemToToggle) {
                     const itemToUpdate = { ... itemToToggle };
                     itemToUpdate.isSelected = !itemToToggle.isSelected;
@@ -219,6 +230,13 @@ export class FilterGridComponent<T, TD> {
                     this.displayedDetailColumns = this.getDetailDisplayColumns();
                 }
             }
+        }
+    }
+
+    updateFilterGridState = (filterGridState: FilterGridState<T, TD>) => {
+        if(this.onFilterStateChanged) {
+            return this.onFilterStateChanged(filterGridState);
+        }        
     }
 
     handleFilterLineChanged = (filterLine: FilterLine) => {
