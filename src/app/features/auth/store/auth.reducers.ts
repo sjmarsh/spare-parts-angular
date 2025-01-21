@@ -51,23 +51,4 @@ export const authReducer = createReducer(
         ...state,
         accessToken: token
     }))
-   /* on(performTokenRefresh, (state) => ({
-        ...state,
-        fetchStatus: FetchStatus.Loading
-    })),
-    on(performTokenRefreshSuccess, (state, {response}) => ({
-        ...state,
-        fetchStatus: FetchStatus.Succeeded,
-        isAuthenticated: response?.isAuthenticated ?? false,
-        accessToken: response?.accessToken,
-        roles: getTokenDetails(response?.accessToken).Roles
-    })),
-    on(performTokenRefreshFail, (state, {response}) => ({
-        ...state,
-        fetchStatus: FetchStatus.Failed,
-        isAuthenticated: false,
-        accessToken: null,
-        roles: null,
-        error: response?.message
-    }))*/
 )

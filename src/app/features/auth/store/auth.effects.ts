@@ -25,12 +25,5 @@ export class AuthEffects {
             this.router.navigate(['/home']); 
         })
     ), {dispatch: false})
-/*
-    performTokenRefresh$ = createEffect(() => this.actions$.pipe(
-        ofType(performTokenRefresh),
-        switchMap(({token}) => this.loginService.performTokenRefresh(token).pipe(
-            map(response => performTokenRefreshSuccess({response})),
-            catchError(response => [performTokenRefreshFail(response)])
-        ))
-    ))*/
+
 }
