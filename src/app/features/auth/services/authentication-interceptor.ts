@@ -19,7 +19,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
     
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
             
-        // guard agains authenticate and refresh calls as we only want to intercept all otehr calls
+        // guard against authenticate and refresh calls as we only want to intercept all other calls
         if (req.url.includes("user/authenticate") || req.url.includes('user/refresh')) {
             console.log("POST INTERCEPT authenticate/refresh: ", req.url);
             return next.handle(req);
