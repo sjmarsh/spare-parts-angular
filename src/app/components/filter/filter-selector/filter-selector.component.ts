@@ -70,7 +70,6 @@ export class FilterSelectorComponent {
     }
 
     ngOnInit(): void {   
-        console.log(this.filterLine)
         if(this.filterLine){
             this.selectedField = this.filterLine.selectedField
             this.updateOperators();
@@ -135,7 +134,7 @@ export class FilterSelectorComponent {
         let fe = e as FocusEvent;
         if(fe && fe.target) {
             let t = fe.target as HTMLInputElement;
-            if(this.filterLine && this.onFilterLineChanged && t.value) {
+            if(this.filterLine && this.onFilterLineChanged) {
                 this.filterLine = {...this.filterLine, value: t.value};
                 this.onFilterLineChanged(this.filterLine);
             }   

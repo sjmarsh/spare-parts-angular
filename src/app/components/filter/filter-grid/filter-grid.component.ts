@@ -18,7 +18,7 @@ import FilterField from '../types/filterField';
 import FilterGridState from '../types/filterGridState';
 import FilterLine from '../types/filterLine';
 import { FilterOperator } from '../types/filterOperators';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { getUUid } from '../../../infrastructure/uuidHelper';
 import { GraphQLBuilder } from '../services/graphQLRequestBuilder';
 import GraphQLRequest from '../types/graphQLRequest';
@@ -60,8 +60,9 @@ import { randomInt } from '../../../infrastructure/randomHelper';
                                     [onRemoveFilter]="handleRemoveFilter">
                                 </app-filter-selector>
                             }  
-                            <button mat-button type="button" (click)="addEmptyFilter()">Add Filter</button>
-                            <button mat-button type="button" (click)="search()">Search</button>
+                            <button mat-flat-button type="button" (click)="addEmptyFilter()">Add Filter</button>
+                            <button mat-flat-button color="primary" type="submit" [disabled]="!filterFormGroup.valid" (click)="search()">Search</button>
+                            <mat-error>{{errorMessage}}</mat-error>
                         </form>
                         </mat-card-content>
                     </mat-card>
@@ -151,7 +152,8 @@ export class FilterGridComponent<T, TD> {
     
     pageSize: number = TableSettings.PageSize
     currentPage: number = 0
-    
+    errorMessage: string = ""
+
     constructor(private graphQLBuilder: GraphQLBuilder) {
         this.chipColors = [];
         this.filterFields = [];
@@ -168,13 +170,18 @@ export class FilterGridComponent<T, TD> {
     }
 
     initFilters = () => {
-        console.log('InitFilters')
         this.filterFields = this.filterGridState?.filterFields || [];
         this.filterLines = this.filterGridState?.filterLines || [];
         this.currentPage = this.filterGridState.currentResultPage;
         this.filterFormGroup = this.initForm(this.filterLines);
         this.displayedColumns = this.getDisplayColumns();
         this.displayedDetailColumns = this.getDetailDisplayColumns();
+        if(this.filterGridState.filterResults?.error) {
+            this.errorMessage = this.filterGridState.filterResults?.error;
+        }
+        else {
+            this.errorMessage = "";
+        }
     }
 
     initForm = (filterLines: Array<FilterLine>): FormGroup => {
@@ -183,9 +190,9 @@ export class FilterGridComponent<T, TD> {
             filterLines.forEach(f => {
                 itemArray.push(new FormGroup({
                   id: new FormControl(f.id),
-                  selectedField: new FormControl(f.selectedField),
-                  selectedOperator: new FormControl(f.selectedOperator),
-                  value: new FormControl(f.value)
+                  selectedField: new FormControl(f.selectedField, [Validators.required, Validators.min(0)]),
+                  selectedOperator: new FormControl(f.selectedOperator, [Validators.required, Validators.min(0)]),
+                  value: new FormControl(f.value, [Validators.required, Validators.min(0)])
                 }))
             })
         }
@@ -243,18 +250,20 @@ export class FilterGridComponent<T, TD> {
         if(this.filterLines.find(f => f.id == filterLine.id)) {
             // update
             this.filterLines = updateArrayItem<FilterLine>(this.filterLines, filterLine);
-            this.updateFilterGridState({...this.filterGridState, filterLines: this.filterLines });
+            this.updateFilterGridState({...this.filterGridState, filterLines: this.filterLines });            
         }
         else {
             // add
             this.filterLines = [ ... this.filterLines, filterLine ];
             this.updateFilterGridState({ ... this.filterGridState, filterLines: this.filterLines });
         }
+        this.filterFormGroup = this.initForm(this.filterLines);
     }
 
     handleRemoveFilter = (filterLine: FilterLine) => {
         if(filterLine && filterLine.id) {
             this.filterLines = this.filterLines.filter(f => f.id !== filterLine.id);
+            this.filterFormGroup = this.initForm(this.filterLines);
             this.updateFilterGridState({ ... this.filterGridState, filterLines: this.filterLines})
         } 
     }
@@ -263,22 +272,27 @@ export class FilterGridComponent<T, TD> {
         if(this.filterLines.length < this.MAX_FILTER_LINE_COUNT) {
             const newLine = { id: getUUid(), selectedField: this.filterFields[0], selectedOperator: FilterOperator.Equal, value: '' } as FilterLine
             this.filterLines = [...this.filterLines, newLine];
+            this.filterFormGroup = this.initForm(this.filterLines);
         }
     }
 
     search = () => {
-        // todo validate
-        console.log('Search')
-        if(this.filterGridState && this.triggerServiceCall) {
-            const currentResultPage = this.currentPage + 1;
-            const pageOffset = { skip: currentResultPage * TableSettings.PageSize - TableSettings.PageSize, take: TableSettings.PageSize } as PageOffset;
-            const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
-            this.triggerServiceCall(graphQLRequest);
+        if(this.filterFormGroup?.invalid) {
+            // should not actually get to this state because search button should be disabled.
+            this.errorMessage = "Filter selections are invalid.";
         }
+        else {
+            this.errorMessage = "";
+            if(this.filterGridState && this.triggerServiceCall) {
+                const currentResultPage = this.currentPage + 1;
+                const pageOffset = { skip: currentResultPage * TableSettings.PageSize - TableSettings.PageSize, take: TableSettings.PageSize } as PageOffset;
+                const graphQLRequest = this.graphQLBuilder.build(this.filterLines, this.filterFields, this.rootGraphQLField, pageOffset)
+                this.triggerServiceCall(graphQLRequest);
+            }
+        }        
     }
 
     handlePageEvent = (e: PageEvent) => {
-        console.log('handle page: ' + e.pageIndex)
         this.currentPage = e.pageIndex;
         this.updateFilterGridState({...this.filterGridState, currentResultPage: this.currentPage });
         this.search();

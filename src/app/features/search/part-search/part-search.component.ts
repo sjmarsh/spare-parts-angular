@@ -1,17 +1,16 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, ReactiveFormsModule, FormArray, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 import { FilterGridComponent } from '../../../components/filter/filter-grid/filter-grid.component';
 import FilterGridState from '../../../components/filter/types/filterGridState';
 import GraphQLRequest from '../../../components/filter/types/graphQLRequest';
 import Part from '../../parts/types/Part';
-import { PagedData, PageInfo } from '../../../components/filter/types/pagedData';
-import { partSearch, partSearchSuccess, partSearchFail, updateFilterGridState } from './store/partSearch.actions';
+import PartAttribute from '../../parts/types/PartAttribute';
+import { partSearch, updateFilterGridState } from './store/partSearch.actions';
 import { PartSearchState } from './store/partSearch.reducers';
 import FetchStatus from '../../../constants/fetchStatus';
-import PartAttribute from '../../parts/types/PartAttribute';
 
 @Component({
     selector: 'app-part-search',
