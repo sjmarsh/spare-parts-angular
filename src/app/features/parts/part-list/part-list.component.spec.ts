@@ -1,17 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
 
 import { PartListComponent } from './part-list.component';
 
 describe('PartListComponent', () => {
   let component: PartListComponent;
   let fixture: ComponentFixture<PartListComponent>;
+  let store: MockStore;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PartListComponent]
+      imports: [PartListComponent],
+      providers: [provideAnimations(), provideMockStore()]
     })
     .compileComponents();
     
+    store = TestBed.inject(MockStore);
     fixture = TestBed.createComponent(PartListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
