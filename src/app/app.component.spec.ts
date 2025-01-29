@@ -1,11 +1,24 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let store: MockStore;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      imports: [AppComponent, RouterTestingModule],
+      providers: [provideAnimations(), provideMockStore()]
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create the app', () => {
@@ -24,6 +37,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, spare-parts-angular');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Spare Parts');
   });
 });
