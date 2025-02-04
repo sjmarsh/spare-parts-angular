@@ -10,6 +10,7 @@ import FilterField from '../types/filterField';
 import FilterFieldType from '../types/filterFieldType';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import FilterLine from '../types/filterLine';
+import { updateArrayItem } from '../../../infrastructure/arrayHelper';
 
 interface MasterData {
     id: number;
@@ -88,6 +89,19 @@ fdescribe('FilterGridComponent', () => {
         // note: chip list component to be tested separately
     });
 
+    it('should handle toggle field', async () => {
+        const updateFilterGridStateSpy = spyOn(component, 'updateFilterGridState');
+        const compiled = fixture.nativeElement as HTMLElement;
+        const chipIcons = compiled.querySelectorAll('.chipIcon');
+        const clickedChip = chipIcons[1].firstChild as HTMLElement; // don't click on first one because it is in use by default filter selection
+
+        clickedChip.click();
+
+        let expectedState = {...initialFilterGridState};
+        expectedState.filterFields[1].isSelected = false;
+        expect(updateFilterGridStateSpy).toHaveBeenCalledWith(expectedState);
+    })
+
     it('should display filter selectors for state fields', async () => {
         const compiled = fixture.nativeElement as HTMLElement;
         
@@ -97,6 +111,17 @@ fdescribe('FilterGridComponent', () => {
         expect(filterSelectors.length).toBe(2);
         expect(await filterSelectors[0].getValueText()).toBe('Name');
         // note: filter selector component to be tested separately
-    })
+    });
+
+    it('should add empty filter', async () => {
+        const compiled = fixture.nativeElement as HTMLElement;
+        
+        const addFilterButton = await rootLoader.getHarness(MatButtonHarness.with({text: 'Add Filter'}));
+        expect(addFilterButton).toBeTruthy();
+        addFilterButton.click();
+
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        expect(filterSelectors.length).toBe(4);
+    });
 
 })
