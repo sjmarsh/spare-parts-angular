@@ -314,7 +314,6 @@ export class FilterGridComponent<T, TD> {
 
     toggleDetail(row: DataRow<T, TD>) {
         if(this.filterGridState.filterResults) {
-            
             let item = {...row};
             item.isDetailsVisible = !item.isDetailsVisible;
 
