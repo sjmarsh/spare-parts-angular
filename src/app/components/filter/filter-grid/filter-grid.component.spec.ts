@@ -29,8 +29,7 @@ interface DetailData {
     description: string;
 }
 
-
-fdescribe('FilterGridComponent', () => {
+describe('FilterGridComponent', () => {
     let component: FilterGridComponent<MasterData, DetailData>;
     let fixture: ComponentFixture<FilterGridComponent<MasterData, DetailData>>;
     let overlayContainer: OverlayContainer;
