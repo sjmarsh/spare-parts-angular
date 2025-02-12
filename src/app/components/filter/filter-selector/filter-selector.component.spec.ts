@@ -105,7 +105,11 @@ fdescribe('FilterSelectorComponent', () => {
   
         
         // There is a bug with MatSelectHarness that changes the underlying data bound to the selector setting the id of the first item to whatever the value is of the item clicked
+        // This effects the handler's ability to update the operators when the selected field has changed.
         // Using native elements also has the same problem.
+        
+
+
         
         let compiled = fixture.nativeElement as HTMLElement;
         const selectorArrows = compiled.querySelectorAll('.mat-mdc-select-arrow');
