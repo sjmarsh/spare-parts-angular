@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HarnessLoader, parallel } from '@angular/cdk/testing';
@@ -9,7 +9,7 @@ import { FilterSelectorComponent } from './filter-selector.component';
 import FilterField from '../types/filterField';
 import FilterFieldType from '../types/filterFieldType';
 import FilterLine from '../types/filterLine';
-import { FilterOperator } from '../types/filterOperators';
+import { FilterOperator, namedFilterOperators, namedFilterOperatorsForDatesAndNumbers, nameFilterOperatorsForStrings } from '../types/filterOperators';
 import PartCategory from '../../../features/parts/types/PartCategory';
 import humanizeString from 'humanize-string';
 
@@ -33,6 +33,11 @@ fdescribe('FilterSelectorComponent', () => {
         value: ""
     } as FilterLine
 
+    let capturedFilterLineChange: FilterLine | null
+    const fakeFilterLineChangedHandler = (filterLine: FilterLine): void | null =>  {
+        capturedFilterLineChange = filterLine;
+    }
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [FilterSelectorComponent, BrowserAnimationsModule], 
@@ -46,6 +51,7 @@ fdescribe('FilterSelectorComponent', () => {
         component = fixture.componentInstance;
         component.fields = initialFields;
         component.filterLine = initialFilterLine;
+        component.onFilterLineChanged = fakeFilterLineChangedHandler;
         rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
         overlayContainer = TestBed.inject(OverlayContainer);
         fixture.detectChanges();
@@ -70,5 +76,77 @@ fdescribe('FilterSelectorComponent', () => {
         const fieldOptionTexts = await parallel(() => fieldOptions.map(o => o.getText()));
         expect(fieldOptionTexts).toEqual(initialFields.map(f => humanizeString(f.name)));
         await fieldSelector.close();
-    })
+    });
+
+    it('should display supplied filter line', async () => {
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        expect(filterSelectors.length).toBe(2);
+        const fieldSelector = filterSelectors[0];
+        expect(await fieldSelector.getValueText()).toBe(humanizeString(initialFilterLine.selectedField.name));
+        const operatorSelector = filterSelectors[1];
+        const expectedOperatorName = nameFilterOperatorsForStrings().find(o => o.filterOperator === initialFilterLine.selectedOperator)?.name ?? '';
+        expect(await operatorSelector.getValueText()).toBe(expectedOperatorName);
+        const compiled = fixture.nativeElement as HTMLElement;
+        const valueInput = compiled.querySelector('input') as HTMLInputElement;
+        expect(valueInput.textContent).toBe(initialFilterLine.value);
+    });
+
+    it('should display operator selections for string type field', async () => {
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        const operatorSelector = filterSelectors[1];
+        await operatorSelector.open();
+        const operatorOptions = await operatorSelector.getOptions();
+        const operatorOptionsTexts = await parallel(() => operatorOptions.map(o => o.getText()));
+        expect(operatorOptionsTexts).toEqual(nameFilterOperatorsForStrings().map(o => humanizeString(o.name)));
+        await operatorSelector.close();
+    });
+
+    fit('should change operator selections for number type field', fakeAsync(() => {
+  
+        
+        // There is a bug with MatSelectHarness that changes the underlying data bound to the selector setting the id of the first item to whatever the value is of the item clicked
+        // Using native elements also has the same problem.
+        
+        let compiled = fixture.nativeElement as HTMLElement;
+        const selectorArrows = compiled.querySelectorAll('.mat-mdc-select-arrow');
+        expect(selectorArrows.length).toBe(2);
+        const fieldSelector = selectorArrows[0] as HTMLDivElement
+        fieldSelector.click();
+        tick();
+        fixture.detectChanges();
+        
+        let oc = overlayContainer.getContainerElement();       
+        const fieldOptions = oc.querySelectorAll('.mat-mdc-option');
+        expect(fieldOptions.length).toBe(4);
+        const secondFieldOption = (fieldOptions[1] as HTMLElement)
+        secondFieldOption.click();
+        
+        tick();
+        fieldSelector.blur();
+        tick();
+        fixture.detectChanges();
+        
+        const operatorSelector = selectorArrows[1] as HTMLDivElement
+        operatorSelector.click();
+        tick();
+        fixture.detectChanges();
+        const operatorOptions = oc.querySelectorAll('.mat-mdc-option');
+        console.log(operatorOptions);
+        
+
+        flush();
+
+        expect(1).toBe(2);
+/*        
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        const operatorSelector = filterSelectors[1];
+        await operatorSelector.open();
+        const operatorOptions = await operatorSelector.getOptions();
+        const operatorOptionsTexts = await parallel(() => operatorOptions.map(o => o.getText()));
+        expect(operatorOptionsTexts).toEqual(namedFilterOperatorsForDatesAndNumbers().map(o => humanizeString(o.name)));
+        await operatorSelector.close();
+*/
+    }));
 })
+
+
