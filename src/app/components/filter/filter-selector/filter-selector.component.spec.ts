@@ -12,6 +12,7 @@ import FilterLine from '../types/filterLine';
 import { FilterOperator, namedFilterOperators, namedFilterOperatorsForDatesAndNumbers, nameFilterOperatorsForStrings } from '../types/filterOperators';
 import PartCategory from '../../../features/parts/types/PartCategory';
 import humanizeString from 'humanize-string';
+import { By } from '@angular/platform-browser';
 
 fdescribe('FilterSelectorComponent', () => {
     let component: FilterSelectorComponent;
@@ -101,47 +102,17 @@ fdescribe('FilterSelectorComponent', () => {
         await operatorSelector.close();
     });
 
-    fit('should change operator selections for number type field', fakeAsync(() => {
-  
-        
+    it('should change operator selections for number type field', async () => {        
         // There is a bug with MatSelectHarness that changes the underlying data bound to the selector setting the id of the first item to whatever the value is of the item clicked
         // This effects the handler's ability to update the operators when the selected field has changed.
-        // Using native elements also has the same problem.
-        
-
-
-        
-        let compiled = fixture.nativeElement as HTMLElement;
-        const selectorArrows = compiled.querySelectorAll('.mat-mdc-select-arrow');
-        expect(selectorArrows.length).toBe(2);
-        const fieldSelector = selectorArrows[0] as HTMLDivElement
-        fieldSelector.click();
-        tick();
+        // Using debug element as a work-around to ensure change event fired correctly without affecting underlying values.
+        let selectors = fixture.debugElement.queryAll(By.css('mat-select'));
+        expect(selectors.length).toBe(2);
+        const fieldSelector = selectors[0];
+        fieldSelector.triggerEventHandler('selectionChange', {value: initialFields[1].id});
+      
         fixture.detectChanges();
-        
-        let oc = overlayContainer.getContainerElement();       
-        const fieldOptions = oc.querySelectorAll('.mat-mdc-option');
-        expect(fieldOptions.length).toBe(4);
-        const secondFieldOption = (fieldOptions[1] as HTMLElement)
-        secondFieldOption.click();
-        
-        tick();
-        fieldSelector.blur();
-        tick();
-        fixture.detectChanges();
-        
-        const operatorSelector = selectorArrows[1] as HTMLDivElement
-        operatorSelector.click();
-        tick();
-        fixture.detectChanges();
-        const operatorOptions = oc.querySelectorAll('.mat-mdc-option');
-        console.log(operatorOptions);
-        
-
-        flush();
-
-        expect(1).toBe(2);
-/*        
+               
         const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
         const operatorSelector = filterSelectors[1];
         await operatorSelector.open();
@@ -149,8 +120,7 @@ fdescribe('FilterSelectorComponent', () => {
         const operatorOptionsTexts = await parallel(() => operatorOptions.map(o => o.getText()));
         expect(operatorOptionsTexts).toEqual(namedFilterOperatorsForDatesAndNumbers().map(o => humanizeString(o.name)));
         await operatorSelector.close();
-*/
-    }));
+    });
 })
 
 

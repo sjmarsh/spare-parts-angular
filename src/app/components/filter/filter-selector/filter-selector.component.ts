@@ -79,7 +79,6 @@ export class FilterSelectorComponent {
     }
 
     updateOperators = () => {
-        console.log('Updating Operators: ' + this.selectedField.type)
         if(this.selectedField.type === FilterFieldType.NumberType || this.selectedField.type === FilterFieldType.DateType){
             this.operators = namedFilterOperatorsForDatesAndNumbers();
         }
@@ -94,12 +93,9 @@ export class FilterSelectorComponent {
         }
     }
 
-    handleFieldChanged = (e: MatSelectChange) => {     
+    handleFieldChanged = (e: MatSelectChange) => {   
         if(e && e.value && this.fields && this.filterLine && this.onFilterLineChanged) {
-            console.log('field changed : ' + e.value);
-            console.log(this.fields);
             this.selectedField = this.fields.find(f => f.id === e.value) ?? this.selectedField;
-            console.log('this selected field' + JSON.stringify(this.selectedField));
             this.filterLine = {...this.filterLine, selectedField: this.selectedField};
             this.onFilterLineChanged(this.filterLine);
         }
