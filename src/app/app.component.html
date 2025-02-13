@@ -7,31 +7,29 @@
   </mat-toolbar>
   <mat-sidenav-container autosize>
     <mat-sidenav [ngClass]="!isCollapsed ? 'expanded' : ''" [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
-      <mat-nav-list >
-        <a mat-list-item >
-          <span class="entry nav-item">
-            <a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
-              <mat-icon>house</mat-icon>
-              <span *ngIf="!isCollapsed"> Home</span>
-            </a>
-          </span>
-        </a>
-        <a *ngIf="!this.authirzationService?.userIsLoggedIn()" mat-list-item>  
-          <span class="entry nav-item">
-            <a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
-              <mat-icon>lock</mat-icon>
-              <span *ngIf="!isCollapsed"> Login</span>
-            </a>
-          </span>
-        </a>
-        <a *ngIf="this.authirzationService?.userIsLoggedIn()" mat-list-item>
-          <span class="entry nav-item">
-            <a routerLink="/logout" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
-              <mat-icon>lock_open</mat-icon>
-              <span *ngIf="!isCollapsed"> Logout</span>
-            </a>
-          </span>
-        </a>
+        <div>
+          <a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
+            <mat-icon>house</mat-icon>
+            <span *ngIf="!isCollapsed"> Home</span>
+          </a>
+        </div>
+        <div>
+          <a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
+            <mat-icon>lock</mat-icon>
+            <span *ngIf="!isCollapsed"> Login</span>
+          </a>
+        </div>
+        <div>
+          <a *ngIf="this.authirzationService?.userIsLoggedIn()" mat-list-item>
+            <span class="entry nav-item">
+              <a routerLink="/logout" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
+                <mat-icon>lock_open</mat-icon>
+                <span *ngIf="!isCollapsed"> Logout</span>
+              </a>
+            </span>
+          </a>
+        </div>
+        <div>
         <a *ngIf="this.authirzationService?.userIsLoggedIn() && this.authirzationService?.userHasRequiredRoles([userRoles.Administrator])" mat-list-item>
           <span class="entry nav-item">
             <a routerLink="/part-list" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
@@ -40,6 +38,8 @@
             </a>
           </span>
         </a>
+      </div>
+      <div>
         <a *ngIf="this.authirzationService?.userIsLoggedIn() && this.authirzationService?.userHasRequiredRoles([userRoles.Administrator, userRoles.StocktakeUser])" mat-list-item>
           <span class="entry nav-item">
             <a routerLink="/inventory" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
@@ -48,6 +48,8 @@
             </a>
           </span>
         </a>
+      </div>
+      <div>
         <a *ngIf="this.authirzationService?.userIsLoggedIn() && this.authirzationService?.userHasRequiredRoles([userRoles.Administrator])" mat-list-item>
           <span class="entry nav-item">
             <a routerLink="/part-search" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-link">
@@ -56,7 +58,7 @@
             </a>
           </span>
         </a>
-      </mat-nav-list>
+      </div>
     </mat-sidenav>
     <mat-sidenav-content>
       <router-outlet></router-outlet>
