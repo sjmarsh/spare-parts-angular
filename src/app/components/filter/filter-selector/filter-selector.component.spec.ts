@@ -14,7 +14,7 @@ import PartCategory from '../../../features/parts/types/PartCategory';
 import humanizeString from 'humanize-string';
 import { By } from '@angular/platform-browser';
 
-fdescribe('FilterSelectorComponent', () => {
+describe('FilterSelectorComponent', () => {
     let component: FilterSelectorComponent;
     let fixture: ComponentFixture<FilterSelectorComponent>;
     let overlayContainer: OverlayContainer;
@@ -120,6 +120,85 @@ fdescribe('FilterSelectorComponent', () => {
         const operatorOptionsTexts = await parallel(() => operatorOptions.map(o => o.getText()));
         expect(operatorOptionsTexts).toEqual(namedFilterOperatorsForDatesAndNumbers().map(o => humanizeString(o.name)));
         await operatorSelector.close();
+    });
+
+    it('should change operator selections for date type field', async () => {
+        let selectors = fixture.debugElement.queryAll(By.css('mat-select'));
+        expect(selectors.length).toBe(2);
+        const fieldSelector = selectors[0];
+        fieldSelector.triggerEventHandler('selectionChange', {value: initialFields[2].id});
+      
+        fixture.detectChanges();
+               
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        const operatorSelector = filterSelectors[1];
+        await operatorSelector.open();
+        const operatorOptions = await operatorSelector.getOptions();
+        const operatorOptionsTexts = await parallel(() => operatorOptions.map(o => o.getText()));
+        expect(operatorOptionsTexts).toEqual(namedFilterOperatorsForDatesAndNumbers().map(o => humanizeString(o.name)));
+        await operatorSelector.close();
+    });
+
+    it('should change operator selections for enum type field', async () => {
+        let selectors = fixture.debugElement.queryAll(By.css('mat-select'));
+        expect(selectors.length).toBe(2);
+        const fieldSelector = selectors[0];
+        fieldSelector.triggerEventHandler('selectionChange', {value: initialFields[3].id});
+      
+        fixture.detectChanges();
+               
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        const operatorSelector = filterSelectors[1];
+        await operatorSelector.open();
+        const operatorOptions = await operatorSelector.getOptions();
+        const operatorOptionsTexts = await parallel(() => operatorOptions.map(o => o.getText()));
+        expect(operatorOptionsTexts).toEqual(nameFilterOperatorsForStrings().map(o => humanizeString(o.name)));
+        await operatorSelector.close();
+    });
+
+    it('should allow enum value options for enum type field', async () => {
+        let selectors = fixture.debugElement.queryAll(By.css('mat-select'));
+        expect(selectors.length).toBe(2);
+        const fieldSelector = selectors[0];
+        fieldSelector.triggerEventHandler('selectionChange', {value: initialFields[3].id});
+      
+        fixture.detectChanges();
+       
+        const filterSelectors = await rootLoader.getAllHarnesses(MatSelectHarness);
+        expect(filterSelectors.length).toBe(3);
+        const enumValueSelector = filterSelectors[2];
+        await enumValueSelector.open();
+        const enumValueOptions = await enumValueSelector.getOptions();
+        const enumValueOptionsTexts = await parallel(() => enumValueOptions.map(o => o.getText()));
+        expect(enumValueOptionsTexts).toEqual(["Electronic", "Mechanical", "Software", "Miscellaneous"]);
+        await enumValueSelector.close();
+    });
+
+    it('should handle filter line update with value change', async () => {
+        const compiled = fixture.nativeElement as HTMLElement;
+        const valueInput = compiled.querySelector('input') as HTMLInputElement;
+        expect(valueInput).toBeTruthy();
+
+        valueInput.value = "Test Value";
+        valueInput.dispatchEvent(new Event("blur"));
+        fixture.detectChanges();
+
+        expect(capturedFilterLineChange?.value).toBe("Test Value");
+    });
+
+    it('should handle filter line update with enum value change', async () => {
+        let selectors = fixture.debugElement.queryAll(By.css('mat-select'));
+        expect(selectors.length).toBe(2);
+        const fieldSelector = selectors[0];
+        fieldSelector.triggerEventHandler('selectionChange', {value: initialFields[3].id});
+        fixture.detectChanges();
+       
+        selectors = fixture.debugElement.queryAll(By.css('mat-select'));
+        expect(selectors.length).toBe(3);
+        const enumSelector = selectors[2];
+        enumSelector.triggerEventHandler('selectionChange', { value: PartCategory.Miscellaneous});
+
+        expect(capturedFilterLineChange?.value).toBe(PartCategory.Miscellaneous);
     });
 })
 
