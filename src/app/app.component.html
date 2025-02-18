@@ -6,7 +6,7 @@
     <h1>Spare Parts</h1>
   </mat-toolbar>
   <mat-sidenav-container autosize>
-    <mat-sidenav [ngClass]="!isCollapsed ? 'expanded' : ''" [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
+    <mat-sidenav [ngClass]="isCollapsed ? '' : 'expanded'" [mode]="isMobile ? 'over' : 'side'" [opened]="isMobile ? 'false' : 'true'">
         <mat-nav-list>
           <mat-list-item >
             <span class="entry nav-item">

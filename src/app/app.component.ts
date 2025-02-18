@@ -39,7 +39,7 @@ export class AppComponent {
   @ViewChild(MatSidenav)
   sidenav!:MatSidenav;
   isMobile = true;
-  isCollapsed = true;
+  isCollapsed = false;
   readonly userRoles = UserRoles
   authirzationService?: AuthorizationService
 
@@ -51,6 +51,7 @@ export class AppComponent {
     this.observer.observe(['(max-width: 800px)']).subscribe((screenSize) => {
       if(screenSize.matches) {
         this.isMobile = true;
+        this.isCollapsed = true;
       } else {
         this.isMobile = false;
       }
