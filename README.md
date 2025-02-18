@@ -16,14 +16,14 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ### - Parts Detail
  - ~~Fix. Add new Part dialog shows blank if haven't already edited an existing part.~~
 ###  - Nav Menu 
- - Nav Menu should expand on large screen by default.  
- - Nav Menu sizing needs fixing on large screen (seems OK for Mobile).
+ - ~~Nav Menu should expand on large screen by default.~~  
+ - ~~Nav Menu sizing needs fixing on large screen (seems OK for Mobile).~~
 ###  - Part Search
  - ~~Add validation to the search criteria~~
  - ~~Fields Chips not disabled for fields that have been used in the filters.~~  
  - ~~Fields Chips check marks are not working as expected.  Need to override out-of-the-box behaviour.~~
  - ~~Search Results Grid should have expanders to reveal Part Attributes (if they exist for the part).~~
- - Improve Test Coverage.
+ - ~~Improve Test Coverage.~~
  - Need to detect and parse date values correctly when forming GraphQL request.
 ### - Other
  - Cleanup Console Logs.
