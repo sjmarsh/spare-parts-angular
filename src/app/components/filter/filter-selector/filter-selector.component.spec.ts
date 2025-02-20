@@ -1,20 +1,21 @@
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
+import { By } from '@angular/platform-browser';
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HarnessLoader, parallel } from '@angular/cdk/testing';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatSelectHarness } from '@angular/material/select/testing';
 
 import { FilterSelectorComponent } from './filter-selector.component';
 import FilterField from '../types/filterField';
 import FilterFieldType from '../types/filterFieldType';
 import FilterLine from '../types/filterLine';
-import { FilterOperator, namedFilterOperators, namedFilterOperatorsForDatesAndNumbers, nameFilterOperatorsForStrings } from '../types/filterOperators';
+import { FilterOperator, namedFilterOperatorsForDatesAndNumbers, nameFilterOperatorsForStrings } from '../types/filterOperators';
 import PartCategory from '../../../features/parts/types/PartCategory';
 import humanizeString from 'humanize-string';
-import { By } from '@angular/platform-browser';
 
-describe('FilterSelectorComponent', () => {
+fdescribe('FilterSelectorComponent', () => {
     let component: FilterSelectorComponent;
     let fixture: ComponentFixture<FilterSelectorComponent>;
     let overlayContainer: OverlayContainer;
@@ -39,6 +40,11 @@ describe('FilterSelectorComponent', () => {
         capturedFilterLineChange = filterLine;
     }
 
+    let capturedRemovedFilterLine: FilterLine | null
+    const fakeRemoveFilterHandler = (filterLine: FilterLine): void | null => {
+        capturedRemovedFilterLine = filterLine;
+    }
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [FilterSelectorComponent, BrowserAnimationsModule], 
@@ -53,9 +59,13 @@ describe('FilterSelectorComponent', () => {
         component.fields = initialFields;
         component.filterLine = initialFilterLine;
         component.onFilterLineChanged = fakeFilterLineChangedHandler;
+        component.onRemoveFilter = fakeRemoveFilterHandler;
         rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
         overlayContainer = TestBed.inject(OverlayContainer);
         fixture.detectChanges();
+
+        capturedFilterLineChange = null;
+        capturedRemovedFilterLine = null;
     });
 
      afterEach(async () => {
@@ -199,6 +209,15 @@ describe('FilterSelectorComponent', () => {
         enumSelector.triggerEventHandler('selectionChange', { value: PartCategory.Miscellaneous});
 
         expect(capturedFilterLineChange?.value).toBe(PartCategory.Miscellaneous);
+    });
+
+    it('should delete filter', async () => {
+        const deleteButton = await rootLoader.getHarness(MatButtonHarness.with({ text: "Delete"}));
+        expect(deleteButton).toBeTruthy();
+
+        await deleteButton.click();
+      
+        expect(capturedRemovedFilterLine).toEqual(initialFilterLine);
     });
 })
 
