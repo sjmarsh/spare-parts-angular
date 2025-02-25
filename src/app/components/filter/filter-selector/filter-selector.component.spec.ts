@@ -15,7 +15,7 @@ import { FilterOperator, namedFilterOperatorsForDatesAndNumbers, nameFilterOpera
 import PartCategory from '../../../features/parts/types/PartCategory';
 import humanizeString from 'humanize-string';
 
-fdescribe('FilterSelectorComponent', () => {
+describe('FilterSelectorComponent', () => {
     let component: FilterSelectorComponent;
     let fixture: ComponentFixture<FilterSelectorComponent>;
     let overlayContainer: OverlayContainer;

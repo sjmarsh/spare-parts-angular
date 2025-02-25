@@ -24,7 +24,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
  - ~~Fields Chips check marks are not working as expected.  Need to override out-of-the-box behaviour.~~
  - ~~Search Results Grid should have expanders to reveal Part Attributes (if they exist for the part).~~
  - ~~Improve Test Coverage.~~
- - Need to detect and parse date values correctly when forming GraphQL request.
+ - ~~Need to detect and parse date values correctly when forming GraphQL request.~~
 ### - Other
  - Cleanup Console Logs.
 
